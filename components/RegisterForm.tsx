@@ -6,19 +6,18 @@ import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import DynamicForm from '@/components/ui/DynamicForm';
+import { toast } from 'sonner';
 
 export default function RegisterForm() {
     const [name, setName] = useState("");
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
-    const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
     const router = useRouter();
 
     const handleRegister = async (e: React.FormEvent) => {
         setLoading(true);
-        setError(null);
         setSuccess(false);
 
         try {
@@ -40,8 +39,7 @@ export default function RegisterForm() {
             setPassword("");
             router.push("/login");
         } catch (err) {
-            setError("Ocorreu um erro ao tentar registrar.");
-            console.error(err);
+            toast.error("Erro ao registrar usuário");
         } finally {
             setLoading(false);
         }
@@ -62,12 +60,6 @@ export default function RegisterForm() {
             {success && (
                 <div className="mb-4 p-3 bg-green-500/20 text-green-400 rounded border border-green-500/50 text-center">
                     Usuário registrado com sucesso!
-                </div>
-            )}
-
-            {error && (
-                <div className="mb-4 p-3 bg-red-500/20 text-red-400 rounded border border-red-500/50 text-center">
-                    {error}
                 </div>
             )}
 

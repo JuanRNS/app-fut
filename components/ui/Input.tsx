@@ -1,10 +1,6 @@
-import React from 'react';
+import { InputProps } from '@/interface/ui.interface';
 
-interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {
-    label?: string;
-}
-
-const Input: React.FC<InputProps> = ({ label, className = '', ...props }) => {
+export default function Input({ label, className = '', ...props }: InputProps) {
     return (
         <div className="flex flex-col gap-1 w-full">
             {label && <label className="text-sm font-medium text-gray-400 ml-1">{label}</label>}
@@ -16,4 +12,4 @@ const Input: React.FC<InputProps> = ({ label, className = '', ...props }) => {
     );
 };
 
-export default Input;
+

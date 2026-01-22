@@ -1,15 +1,15 @@
-import React from 'react';
+import { ButtonProps } from '@/interface/ui.interface';
 
-interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: 'primary' | 'outline';
-}
-
-const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', className = '', ...props }) => {
-    const baseStyles = "px-6 py-3 rounded-full font-bold transition-all duration-300 transform active:scale-95";
+export default function Button({ children, variant = 'primary', className = '', isActive = false, ...props }: ButtonProps) {
+    const baseStyles = "transition-all duration-300 transform active:scale-95 cursor-pointer";
 
     const variants = {
-        primary: "bg-gradient-to-r from-primary to-secondary text-black shadow-[0_0_15px_rgba(0,255,157,0.5)] hover:shadow-[0_0_25px_rgba(0,255,157,0.7)]",
-        outline: "border-2 border-primary text-primary hover:bg-primary hover:text-black shadow-[0_0_10px_rgba(0,240,255,0.3)]"
+        primary: "px-4 py-2 rounded-full font-bold bg-gradient-to-r from-primary to-secondary text-black shadow-[0_0_15px_rgba(0,255,157,0.5)] hover:shadow-[0_0_25px_rgba(0,255,157,0.7)]",
+        outline: "px-6 py-3 rounded-full font-bold border-2 border-primary text-primary hover:bg-primary hover:text-black shadow-[0_0_10px_rgba(0,240,255,0.3)]",
+        ghost: "bg-transparent rounded-full",
+        secondary: isActive
+            ? "flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap bg-primary text-black font-bold"
+            : "flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap bg-surface/50 text-gray-400 hover:text-white hover:bg-white/10"
     };
 
     return (
@@ -22,4 +22,4 @@ const Button: React.FC<ButtonProps> = ({ children, variant = 'primary', classNam
     );
 };
 
-export default Button;
+
