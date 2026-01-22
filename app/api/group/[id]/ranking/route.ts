@@ -2,10 +2,10 @@ import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 
 
-export async function GET(request: Request, params: Promise<{ id: string }>) {
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     try {
         const { id } = await params;
-        const group = await prisma.group.findUnique({
+        const group = await prisma.group.findFirst({
             where: {
                 id,
             },

@@ -67,7 +67,7 @@ export default function Players(props: { group: IGroupDetails, fetchGroup: () =>
                             </button>
                         </div>
                         <div className="p-6">
-                            <CreatePlayer id={group.id} onSuccess={() => {
+                            <CreatePlayer id={group.group.id} onSuccess={() => {
                                 fetchGroup();
                                 setIsModalOpen(false);
                             }} />

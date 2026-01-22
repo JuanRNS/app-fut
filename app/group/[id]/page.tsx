@@ -81,10 +81,10 @@ export default function GroupPage() {
 
                     <div className="flex gap-4 text-sm text-gray-400 mt-2">
                         <span className="flex items-center gap-2">
-                            <FaUsers className="text-primary" /> {group.players} Jogadores
+                            <FaUsers className="text-primary" /> {group.players.length} Jogadores
                         </span>
                         <span className="flex items-center gap-2">
-                            <FaFutbol className="text-primary" /> {group.matches?.length || 0} Partidas
+                            <FaFutbol className="text-primary" /> {group.matches.length} Partidas
                         </span>
                     </div>
                 </div>

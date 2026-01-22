@@ -1,4 +1,5 @@
 import { IMatch, IPagination } from "./match.interface";
+import { IPlayer } from "./player.interface";
 
 export interface IRequestGroup {
     name: string;
@@ -19,7 +20,7 @@ export interface IGroupCardProps {
 
 export interface IGroupDetails {
     group: IGroup;
-    players: number;
+    players: IPlayer[];
     matches: IMatch[];
     pagination: IPagination;
 }
@@ -27,4 +28,5 @@ export interface IGroupDetails {
 interface IGroup {
     name: string;
     description: string;
+    id: string;
 }

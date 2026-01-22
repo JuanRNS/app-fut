@@ -29,6 +29,7 @@ export async function POST(request: Request) {
 
         return NextResponse.json({ message: "Grupo criado com sucesso" }, { status: 201 })
     } catch (error) {
+        console.log(error);
         return NextResponse.json({ message: "Erro ao criar grupo" + error }, { status: 500 })
     }
 }
@@ -44,7 +45,7 @@ export async function GET(request: Request) {
 }
 
 
-export async function PUT(request: Request, params: Promise<{ id: string }>) {
+export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const group: IRequestGroup = await request.json();
     const { id } = await params;
     try {

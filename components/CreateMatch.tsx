@@ -29,7 +29,7 @@ export default function CreateMatch(props: { group: IGroupDetails }) {
                 <MatchInterface
                     players={group.players || []}
                     onFinish={() => setIsMatchActive(false)}
-                    groupId={group.id}
+                    groupId={group.group.id}
                 />
             )}
         </div>
