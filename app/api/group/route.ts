@@ -36,7 +36,13 @@ export async function POST(request: Request) {
 
 export async function GET(request: Request) {
     try {
-        const groups = await prisma.group.findMany()
+        const groups = await prisma.group.findMany(
+            {
+                where: {
+                    ownerId: await getSession()
+                }
+            }
+        )
         return NextResponse.json(groups, { status: 200 })
     } catch (error) {
         return NextResponse.json({ message: "Erro ao buscar grupos" }, { status: 500 })
