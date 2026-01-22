@@ -1,8 +1,8 @@
-import { IResponsePlayer } from "@/interface/player.interface";
+import { IResponsePlayerRanking } from "@/interface/player.interface";
 import { useEffect, useState } from "react";
 
 export default function Ranking(props: { id: string }) {
-    const [ranking, setRanking] = useState<IResponsePlayer[]>([]);
+    const [ranking, setRanking] = useState<IResponsePlayerRanking[]>([]);
 
     useEffect(() => {
         getRanking();
