@@ -1,8 +1,7 @@
-import { IGroupDetails } from "@/interface/group.interface";
 import MatchDetails from "./MatchDetails";
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import { IMatch, IMatchResponse } from "@/interface/match.interface";
+import { IMatchResponse } from "@/interface/match.interface";
 
 export default function Matches({ groupId }: { groupId: string }) {
     const [matches, setMatches] = useState<IMatchResponse | null>(null);

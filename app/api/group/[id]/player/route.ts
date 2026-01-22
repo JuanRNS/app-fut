@@ -2,7 +2,7 @@ import { IRequestPlayer } from "@/interface/player.interface";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, params: Promise<{ id: string }>) {
     const { id } = await params;
     const player: IRequestPlayer = await request.json();
     try {
@@ -19,7 +19,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     }
 }
 
-export async function DELETE(request: Request, { params }: { params: { id: string } }) {
+export async function DELETE(request: Request, params: Promise<{ id: string }>) {
     const { id } = await params;
     try {
         const players = await prisma.player.delete({

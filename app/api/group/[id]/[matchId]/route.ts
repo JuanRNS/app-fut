@@ -2,7 +2,7 @@ import { Team } from "@/generated/prisma/enums";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
-export async function POST(request: Request, { params }: { params: { id: string } }) {
+export async function POST(request: Request, params: Promise<{ id: string }>) {
     const { id } = await params;
     const body = await request.json();
     const { teamA, teamB } = body;
@@ -28,7 +28,7 @@ export async function POST(request: Request, { params }: { params: { id: string 
     }
 }
 
-export async function GET(request: Request, { params }: { params: { matchId: string } }) {
+export async function GET(request: Request, params: Promise<{ matchId: string }>) {
     const { matchId } = await params;
     try {
         const match = await prisma.match.findUnique({
@@ -99,7 +99,7 @@ export async function GET(request: Request, { params }: { params: { matchId: str
 
 
 
-export async function DELETE(request: Request, { params }: { params: { id: string, matchId: string } }) {
+export async function DELETE(request: Request, params: Promise<{ id: string, matchId: string }>) {
     const { id, matchId } = await params;
     try {
         const match = await prisma.match.delete({

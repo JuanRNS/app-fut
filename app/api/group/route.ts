@@ -44,12 +44,13 @@ export async function GET(request: Request) {
 }
 
 
-export async function PUT(request: Request, params: { id: string }) {
+export async function PUT(request: Request, params: Promise<{ id: string }>) {
     const group: IRequestGroup = await request.json();
+    const { id } = await params;
     try {
         await prisma.group.update({
             where: {
-                id: params.id
+                id
             },
             data: {
                 name: group.name.trim().toLowerCase(),
@@ -62,11 +63,12 @@ export async function PUT(request: Request, params: { id: string }) {
     }
 }
 
-export async function DELETE(request: Request, params: { id: string }) {
+export async function DELETE(request: Request, params: Promise<{ id: string }>) {
+    const { id } = await params;
     try {
         await prisma.group.delete({
             where: {
-                id: params.id
+                id
             }
         })
         return NextResponse.json({ message: "Grupo deletado com sucesso" }, { status: 200 })
