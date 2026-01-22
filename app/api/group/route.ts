@@ -8,7 +8,6 @@ export async function POST(request: Request) {
     const userId = await getSession();
 
     try {
-
         const groupOn = await prisma.group.findFirst({
             where: {
                 name: group.name
@@ -41,39 +40,5 @@ export async function GET(request: Request) {
         return NextResponse.json(groups, { status: 200 })
     } catch (error) {
         return NextResponse.json({ message: "Erro ao buscar grupos" }, { status: 500 })
-    }
-}
-
-
-export async function PUT(request: Request, { params }: { params: Promise<{ id: string }> }) {
-    const group: IRequestGroup = await request.json();
-    const { id } = await params;
-    try {
-        await prisma.group.update({
-            where: {
-                id
-            },
-            data: {
-                name: group.name.trim().toLowerCase(),
-                description: group.description
-            }
-        })
-        return NextResponse.json({ message: "Grupo atualizado com sucesso" }, { status: 200 })
-    } catch (error) {
-        return NextResponse.json({ message: "Erro ao atualizar grupo" }, { status: 500 })
-    }
-}
-
-export async function DELETE(request: Request, params: Promise<{ id: string }>) {
-    const { id } = await params;
-    try {
-        await prisma.group.delete({
-            where: {
-                id
-            }
-        })
-        return NextResponse.json({ message: "Grupo deletado com sucesso" }, { status: 200 })
-    } catch (error) {
-        return NextResponse.json({ message: "Erro ao deletar grupo" }, { status: 500 })
     }
 }
