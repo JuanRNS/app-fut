@@ -1,20 +1,15 @@
 'use client';
 
-import React from 'react';
+import { DynamicFormProps } from '@/interface/ui.interface';
+import { toast } from 'sonner';
 
-interface DynamicFormProps {
-    children: React.ReactNode;
-    className?: string;
-    onSubmit?: (e: React.FormEvent) => void;
-}
-
-const DynamicForm: React.FC<DynamicFormProps> = ({ children, className = '', onSubmit }) => {
+export default function DynamicForm({ children, className = '', onSubmit }: DynamicFormProps) {
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
         if (onSubmit) {
             onSubmit(e);
         } else {
-            console.log('Form submitted');
+            toast.success('Formulário enviado com sucesso!');
         }
     };
 
@@ -25,4 +20,4 @@ const DynamicForm: React.FC<DynamicFormProps> = ({ children, className = '', onS
     );
 };
 
-export default DynamicForm;
+

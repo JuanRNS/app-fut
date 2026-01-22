@@ -1,0 +1,364 @@
+import React, { useState, useEffect } from 'react';
+import { FaPlay, FaPause, FaStop, FaClock, FaPlus, FaTimes, FaUserShield, FaSpinner } from 'react-icons/fa';
+import Button from './ui/Button';
+import Card from './ui/Card';
+import PlayerCard from './PlayerCard';
+import DropdownStatistics from './DropdownStatistics';
+import { IMatchInterfaceProps } from '@/interface/match.interface';
+import { IPlayer } from '@/interface/player.interface';
+import { toast } from 'sonner';
+import { Team } from '@/generated/prisma/enums';
+
+export default function MatchInterface({ players, onFinish, groupId }: IMatchInterfaceProps) {
+    const [time, setTime] = useState(0);
+    const [isRunning, setIsRunning] = useState(false);
+    const [homeScore, setHomeScore] = useState(0);
+    const [awayScore, setAwayScore] = useState(0);
+    const [hasStarted, setHasStarted] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
+
+    const [openDropdownPlayerId, setOpenDropdownPlayerId] = useState<string | null>(null);
+    const [matchId, setMatchId] = useState<string | null>(null);
+
+    const [teamA, setTeamA] = useState<IPlayer[]>([]);
+    const [teamB, setTeamB] = useState<IPlayer[]>([]);
+    const [selectingFor, setSelectingFor] = useState<Team | null>(null);
+
+    useEffect(() => {
+        let interval: NodeJS.Timeout;
+
+        if (isRunning) {
+            interval = setInterval(() => {
+                setTime((prev) => prev + 1);
+            }, 1000);
+        }
+
+        return () => {
+            if (interval) clearInterval(interval);
+        };
+    }, [isRunning]);
+
+    const resetTimer = () => {
+        setTime(0);
+        setIsRunning(false);
+    };
+
+    const formatTime = (seconds: number) => {
+        const mins = Math.floor(seconds / 60);
+        const secs = seconds % 60;
+        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const handleStartMatch = async () => {
+        if (teamA.length === 0 && teamB.length === 0) {
+            toast.error("Selecione jogadores para os times");
+            return;
+        }
+
+        if (teamA.length !== 5 || teamB.length !== 5) {
+            toast.error("Selecione 5 jogadores para cada time");
+            return;
+        }
+
+        setIsSubmitting(true);
+        try {
+            const response = await fetch(`/api/group/${groupId}/match`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    teamA: teamA.map(p => p.id),
+                    teamB: teamB.map(p => p.id)
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error("Erro ao criar partida");
+            }
+
+            const newMatch = await response.json();
+            setMatchId(newMatch.id);
+
+            setHasStarted(true);
+            setIsRunning(true);
+        } catch (error) {
+            toast.error("Erro ao iniciar partida");
+        } finally {
+            setIsSubmitting(false);
+        }
+    };
+
+    const handleAddPlayer = (player: IPlayer) => {
+        if (selectingFor === 'HOME') {
+            if (teamA.length < 5) setTeamA(prev => [...prev, player]);
+        } else if (selectingFor === 'AWAY') {
+            if (teamB.length < 5) setTeamB(prev => [...prev, player]);
+        }
+        setSelectingFor(null);
+    };
+
+    const handleRemovePlayer = (team: Team, playerId: string) => {
+        if (hasStarted) return; // Disable after start
+
+        if (team === 'HOME') {
+            setTeamA(prev => prev.filter(p => p.id !== playerId));
+        } else {
+            setTeamB(prev => prev.filter(p => p.id !== playerId));
+        }
+    };
+
+    const toggleDropdown = (playerId: string) => {
+        if (openDropdownPlayerId === playerId) {
+            setOpenDropdownPlayerId(null);
+        } else {
+            setOpenDropdownPlayerId(playerId);
+        }
+    };
+
+    const availablePlayers = players.filter(p =>
+        !teamA.some(ta => ta.id === p.id) &&
+        !teamB.some(tb => tb.id === p.id)
+    );
+
+    const renderTeamSlot = (team: Team, index: number) => {
+        const currentTeam = team === 'HOME' ? teamA : teamB;
+        const player = currentTeam[index];
+        const isGK = index === 0;
+
+        if (player) {
+            return (
+                <div key={index} className="relative group">
+                    <PlayerCard
+                        name={player.name}
+                        id={player.id}
+                        isMatch={true}
+                    />
+                    {isGK && (
+                        <div className="absolute -top-2 -left-2 bg-yellow-500 text-black p-1.5 rounded-full shadow-lg z-10" title="Goleiro">
+                            <FaUserShield size={14} />
+                        </div>
+                    )}
+                    {!hasStarted && (
+                        <button
+                            onClick={() => handleRemovePlayer(team, player.id)}
+                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
+                        >
+                            <FaTimes size={12} />
+                        </button>
+                    )}
+                    {hasStarted && (
+                        <div className="relative">
+                            <button
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    toggleDropdown(player.id);
+                                }}
+                                className={`absolute bottom-6 -right-2 p-1.5 rounded-full shadow-lg z-10 cursor-pointer transition-colors ${openDropdownPlayerId === player.id
+                                    ? 'bg-white text-black hover:bg-gray-200'
+                                    : 'bg-green-500 text-black hover:bg-green-600'
+                                    }`}
+                            >
+                                {openDropdownPlayerId === player.id ? <FaTimes size={14} /> : <FaPlus size={14} />}
+                            </button>
+
+                            {openDropdownPlayerId === player.id && (
+                                <DropdownStatistics
+                                    onClose={() => setOpenDropdownPlayerId(null)}
+                                    playerId={player.id}
+                                    matchId={matchId}
+                                    groupId={groupId}
+                                    team={team}
+                                />
+                            )}
+                        </div>
+                    )}
+                </div>
+            );
+        }
+
+        if (hasStarted) {
+            return (
+                <div key={index} className="w-full h-[72px] rounded-xl border-2 border-dashed border-white/5 bg-white/5 flex items-center justify-center text-white/10">
+                    <span className="text-sm">Vazio</span>
+                </div>
+            );
+        }
+
+        return (
+            <button
+                key={index}
+                onClick={() => setSelectingFor(team)}
+                className={`w-full h-[72px] rounded-xl border-2 border-dashed flex items-center justify-center gap-2 transition-all group
+                    ${isGK
+                        ? 'border-yellow-500/30 bg-yellow-500/5 text-yellow-500/50 hover:bg-yellow-500/10 hover:border-yellow-500/50 hover:text-yellow-500'
+                        : 'border-white/10 text-white/20 hover:text-primary hover:border-primary/50 hover:bg-primary/5 hover:text-primary'
+                    }`}
+            >
+                {isGK ? <FaUserShield /> : <FaPlus />}
+                <span className="text-sm font-medium">{isGK ? "Goleiro" : "Adicionar"}</span>
+            </button>
+        );
+    };
+
+    return (
+        <div className="flex flex-col gap-6 relative">
+            {/* Players Team Selection */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                {/* Team A Data */}
+                <div className="bg-surface/30 rounded-xl p-6 border border-white/5 flex flex-col gap-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                            <div className="w-3 h-8 bg-primary rounded-full"></div>
+                            <h3 className="text-white font-bold text-xl">Time A</h3>
+                        </div>
+                        <span className="text-xs font-mono bg-white/5 px-3 py-1 rounded-full text-gray-400 border border-white/5">
+                            {teamA.length}/5
+                        </span>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        {Array.from({ length: 5 }).map((_, i) => renderTeamSlot('HOME', i))}
+                    </div>
+                </div>
+
+                {/* Team B Data */}
+                <div className="bg-surface/30 rounded-xl p-6 border border-white/5 flex flex-col gap-4">
+                    <div className="flex items-center justify-between mb-2">
+                        <div className="flex items-center gap-3">
+                            <div className="w-3 h-8 bg-blue-500 rounded-full"></div>
+                            <h3 className="text-white font-bold text-xl">Time B</h3>
+                        </div>
+                        <span className="text-xs font-mono bg-white/5 px-3 py-1 rounded-full text-gray-400 border border-white/5">
+                            {teamB.length}/5
+                        </span>
+                    </div>
+                    <div className="flex flex-col gap-3">
+                        {Array.from({ length: 5 }).map((_, i) => renderTeamSlot('AWAY', i))}
+                    </div>
+                </div>
+            </div>
+
+            {!hasStarted ? (
+                <div className="flex justify-center mt-4">
+                    <Button
+                        variant="primary"
+                        onClick={handleStartMatch}
+                        className="px-12 py-4 text-xl font-bold rounded-xl shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all flex items-center gap-3"
+                        disabled={isSubmitting}
+                    >
+                        {isSubmitting ? <FaSpinner className="animate-spin" /> : <FaPlay />}
+                        Iniciar Partida
+                    </Button>
+                </div>
+            ) : (
+                /* Scoreboard & Timer */
+                <Card className="flex flex-col items-center gap-6 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <div className="flex items-center justify-between w-full max-w-lg px-4">
+                        <div className="flex flex-col items-center">
+                            <span className="text-gray-400 text-sm uppercase tracking-wider mb-2">Time A</span>
+                            <div className="text-6xl font-bold text-white bg-white/5 rounded-2xl p-4 min-w-[100px] text-center decoration-0">
+                                {homeScore}
+                            </div>
+                            <div className="flex gap-2 mt-2">
+                                <Button variant="secondary" onClick={() => setHomeScore(s => Math.max(0, s - 1))}>-</Button>
+                                <Button variant="primary" onClick={() => setHomeScore(s => s + 1)}>+</Button>
+                            </div>
+                        </div>
+
+                        <div className="flex flex-col items-center gap-2">
+                            <div className="text-4xl font-mono text-primary font-bold tracking-widest flex items-center gap-2">
+                                <FaClock className="w-6 h-6" />
+                                {formatTime(time)}
+                            </div>
+                            <span className="text-xs text-green-500 uppercase tracking-widest font-bold">
+                                {isRunning ? 'Em Andamento' : 'Pausado'}
+                            </span>
+                        </div>
+
+                        <div className="flex flex-col items-center">
+                            <span className="text-gray-400 text-sm uppercase tracking-wider mb-2">Time B</span>
+                            <div className="text-6xl font-bold text-white bg-white/5 rounded-2xl p-4 min-w-[100px] text-center">
+                                {awayScore}
+                            </div>
+                            <div className="flex gap-2 mt-2">
+                                <Button variant="secondary" onClick={() => setAwayScore(s => Math.max(0, s - 1))}>-</Button>
+                                <Button variant="primary" onClick={() => setAwayScore(s => s + 1)}>+</Button>
+                            </div>
+                        </div>
+                    </div>
+
+                    {/* Match Controls */}
+                    <div className="w-full flex justify-center gap-4 mt-4">
+                        <Button
+                            variant={isRunning ? "secondary" : "primary"}
+                            onClick={() => setIsRunning(!isRunning)}
+                            className="w-40 flex items-center justify-center gap-2"
+                        >
+                            {isRunning ? <><FaPause /> Pausar</> : <><FaPlay /> Continuar</>}
+                        </Button>
+                        <Button
+                            variant="ghost"
+                            onClick={onFinish}
+                            className="w-40 flex items-center gap-2 justify-center text-red-500 hover:bg-red-500/10 hover:text-red-400"
+                        >
+                            <FaStop /> Finalizar
+                        </Button>
+                        <Button
+                            variant="secondary"
+                            onClick={() => resetTimer()}
+                            className="w-40 flex items-center gap-2 justify-center text-white hover:bg-white/10 hover:text-white"
+                        >
+                            <FaStop /> Zerar Cronometro
+                        </Button>
+                    </div>
+                </Card>
+            )}
+
+            {/* Player Selection Modal */}
+            {selectingFor && (
+                <div
+                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
+                    onClick={() => setSelectingFor(null)}
+                >
+                    <div
+                        className="bg-[#1a1b26] rounded-2xl border border-white/10 w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh] shadow-2xl animate-in zoom-in-95 duration-200"
+                        onClick={e => e.stopPropagation()}
+                    >
+                        <div className="p-5 border-b border-white/10 flex items-center justify-between bg-surface/50">
+                            <h3 className="font-bold text-white text-lg flex items-center gap-2">
+                                <FaPlus className="text-primary" />
+                                Adicionar ao Time {selectingFor}
+                            </h3>
+                            <button
+                                onClick={() => setSelectingFor(null)}
+                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                            >
+                                <FaTimes />
+                            </button>
+                        </div>
+
+                        <div className="p-4 overflow-y-auto custom-scrollbar flex flex-col gap-2 min-h-[200px]">
+                            {availablePlayers.length === 0 ? (
+                                <div className="flex flex-col items-center justify-center flex-1 py-12 text-gray-500 gap-3">
+                                    <FaUserShield className="w-12 h-12 opacity-20" />
+                                    <p>Nenhum jogador disponível</p>
+                                </div>
+                            ) : (
+                                availablePlayers.map(player => (
+                                    <div key={player.id} className="transform transition-all duration-200 hover:scale-[1.01]">
+                                        <PlayerCard
+                                            name={player.name}
+                                            id={player.id}
+                                            isMatch={true}
+                                            onClick={() => handleAddPlayer(player)}
+                                        />
+                                    </div>
+                                ))
+                            )}
+                        </div>
+                    </div>
+                </div>
+            )}
+        </div>
+    );
+}

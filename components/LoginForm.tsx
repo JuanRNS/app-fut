@@ -35,7 +35,7 @@ export default function LoginForm() {
             setSuccess(true);
             setEmail("");
             setPassword("");
-            router.push("/");
+            router.push("/home");
         } catch (err) {
             setError("Ocorreu um erro ao tentar fazer login.");
         } finally {

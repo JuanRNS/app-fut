@@ -1,4 +1,4 @@
-import { IResponseUser } from "@/app/interface/user.interface";
+import { IResponseUser } from "@/interface/user.interface";
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma"
 import bcrypt from "bcryptjs";
@@ -14,16 +14,16 @@ export async function POST(request: Request) {
     })
 
     if (!userOn) {
-        return NextResponse.json({message: "Usuario nao encontrado"}, {status: 404})
+        return NextResponse.json({ message: "Usuario nao encontrado" }, { status: 404 })
     }
 
     const isPasswordValid = await bcrypt.compare(user.password, userOn.password);
 
     if (!isPasswordValid) {
-        return NextResponse.json({message: "Senha invalida"}, {status: 401})
+        return NextResponse.json({ message: "Senha invalida" }, { status: 401 })
     }
 
     await createSession(userOn.id);
 
-    return NextResponse.json({message: "Login realizado com sucesso"}, {status: 200})
+    return NextResponse.json({ message: "Login realizado com sucesso" }, { status: 200 })
 }

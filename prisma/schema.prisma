@@ -14,11 +14,79 @@ datasource db {
 }
 
 model User {
-  id    String @id @default(cuid())
-  email String @unique
-  name  String
-  password String
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String
+  password  String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  groups    Group[]
 }
 
+model Group {
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  id          String   @id @default(cuid())
+  matches     Match[]
+  name        String
+  description String
+  ownerId     String
+  owner       User     @relation(fields: [ownerId], references: [id])
+  players     Player[]
+}
+
+model Match {
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  id         String            @id @default(cuid())
+  groupId    String
+  group      Group             @relation(fields: [groupId], references: [id])
+  statistics MatchStatistics[]
+  teams      MatchPlayer[]
+}
+
+model MatchPlayer {
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  id        String   @id @default(cuid())
+  matchId   String
+  match     Match    @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  playerId  String
+  player    Player   @relation(fields: [playerId], references: [id])
+  team      Team
+
+  @@unique([matchId, playerId])
+}
+
+model Player {
+  createdAt  DateTime          @default(now())
+  updatedAt  DateTime          @updatedAt
+  id         String            @id @default(cuid())
+  name       String
+  matches    MatchPlayer[]
+  statistics MatchStatistics[]
+  groupId    String
+  group      Group             @relation(fields: [groupId], references: [id])
+}
+
+model MatchStatistics {
+  createdAt DateTime            @default(now())
+  updatedAt DateTime            @updatedAt
+  id        String              @id @default(cuid())
+  matchId   String
+  match     Match               @relation(fields: [matchId], references: [id], onDelete: Cascade)
+  playerId  String
+  player    Player              @relation(fields: [playerId], references: [id])
+  type      MatchStatisticsType
+  team      Team                @default(HOME)
+}
+
+enum Team {
+  HOME
+  AWAY
+}
+
+enum MatchStatisticsType {
+  GOAL
+  ASSISTANCE
+}

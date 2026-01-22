@@ -1,7 +1,7 @@
 import Link from 'next/link';
 import Button from '@/components/ui/Button';
-
 export default function Home() {
+
   return (
     <div className="min-h-screen flex flex-col items-center justify-center p-4 relative overflow-hidden bg-[#0B1121]">
       <div className="absolute top-[-10%] left-[-10%] w-[600px] h-[600px] bg-primary/10 rounded-full blur-[100px] pointer-events-none" />
@@ -22,7 +22,7 @@ export default function Home() {
 
         <div className="flex flex-col sm:flex-row gap-4 mt-8">
           <Link href="/login">
-            <Button className="px-10 py-4 text-lg">
+            <Button className="px-10 py-4 text-lg" >
               Acessar Sistema
             </Button>
           </Link>
