@@ -7,6 +7,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import DynamicForm from '@/components/ui/DynamicForm';
 import { toast } from 'sonner';
+import Link from 'next/link';
 
 export default function RegisterForm() {
     const [name, setName] = useState("");
@@ -94,9 +95,9 @@ export default function RegisterForm() {
                 </Button>
 
                 <div className="text-center mt-4">
-                    <a href="http://localhost:3000/login" className="text-sm text-primary hover:text-secondary transition-colors">
+                    <Link href="/login" className="text-sm text-primary hover:text-secondary transition-colors">
                         Já tem uma conta? Faça login
-                    </a>
+                    </Link>
                 </div>
             </DynamicForm>
         </Card>

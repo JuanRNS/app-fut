@@ -6,6 +6,7 @@ import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import DynamicForm from '@/components/ui/DynamicForm';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -93,9 +94,9 @@ export default function LoginForm() {
                     <a href="#" className="text-sm text-primary hover:text-secondary transition-colors">
                         Esqueceu a senha?
                     </a>
-                    <a href="http://localhost:3000/register" className="text-sm text-primary hover:text-secondary transition-colors">
+                    <Link href="/register" className="text-sm text-primary hover:text-secondary transition-colors">
                         Não tem uma conta? Cadastre-se
-                    </a>
+                    </Link>
                 </div>
             </DynamicForm>
         </Card>
