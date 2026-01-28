@@ -4,7 +4,7 @@ import Button from './ui/Button';
 import Card from './ui/Card';
 import PlayerCard from './PlayerCard';
 import DropdownStatistics from './DropdownStatistics';
-import { IMatchInterfaceProps } from '@/interface/match.interface';
+import { IMatch, IMatchInterfaceProps, IMatchPlayer, IMatchResponse, IMatchResponseInterface } from '@/interface/match.interface';
 import { IPlayer } from '@/interface/player.interface';
 import { toast } from 'sonner';
 import { Team } from '@/generated/prisma/enums';
@@ -23,6 +23,13 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
     const [teamA, setTeamA] = useState<IPlayer[]>([]);
     const [teamB, setTeamB] = useState<IPlayer[]>([]);
     const [selectingFor, setSelectingFor] = useState<Team | null>(null);
+
+    useEffect(() => {
+        const storedMatchId = localStorage.getItem('matchId');
+        if (storedMatchId) {
+            handleGetMatch(storedMatchId);
+        }
+    }, [groupId]); // Run once on mount (or if groupId changes)
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -47,6 +54,56 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
         const mins = Math.floor(seconds / 60);
         const secs = seconds % 60;
         return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+    };
+
+    const handleGetMatch = async (id?: string) => {
+        const targetId = id || matchId;
+        if (!targetId) return;
+
+        try {
+            // Correct URL based on file system app/api/group/[id]/[matchId]/route.ts
+            const response = await fetch(`/api/group/${groupId}/${targetId}`);
+
+            if (!response.ok) {
+                console.error("Match fetch failed");
+                return;
+            }
+
+            const data: IMatchResponseInterface = await response.json();
+            console.log(data);
+            if (data.match) {
+                localStorage.setItem('matchId', data.match.id);
+                setMatchId(data.match.id);
+                setHasStarted(true);
+                if (data.match.teams) {
+                    const players = data.match.teams;
+                    const homePlayers = players.filter((p: IMatchPlayer) => p.team === 'HOME').map((p: IMatchPlayer) => ({ id: p.player!.id, name: p.player!.name }));
+                    const awayPlayers = players.filter((p: IMatchPlayer) => p.team === 'AWAY').map((p: IMatchPlayer) => ({ id: p.player!.id, name: p.player!.name }));
+                    setTeamA(homePlayers);
+                    setTeamB(awayPlayers);
+                }
+                if (data.goalsAway && data.goalsHome) {
+                    setHomeScore(data.goalsHome);
+                    setAwayScore(data.goalsAway);
+                }
+
+                setIsRunning(false);
+            }
+        } catch (error) {
+            console.error(error);
+            toast.error("Erro ao recuperar partida");
+        }
+    };
+
+    const handleStatistics = (type?: 'GOAL' | 'ASSISTANCE', team?: Team) => {
+        if (type === 'GOAL' && team) {
+            if (team === 'HOME') {
+                setHomeScore((prev) => prev + 1);
+            } else if (team === 'AWAY') {
+                setAwayScore((prev) => prev + 1);
+            }
+        }
+        setOpenDropdownPlayerId(null);
     };
 
     const handleStartMatch = async () => {
@@ -77,7 +134,8 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                 throw new Error("Erro ao criar partida");
             }
 
-            const newMatch = await response.json();
+            const newMatch: IMatch = await response.json();
+            localStorage.setItem('matchId', newMatch.id);
             setMatchId(newMatch.id);
 
             setHasStarted(true);
@@ -99,7 +157,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
     };
 
     const handleRemovePlayer = (team: Team, playerId: string) => {
-        if (hasStarted) return; // Disable after start
+        if (hasStarted) return;
 
         if (team === 'HOME') {
             setTeamA(prev => prev.filter(p => p.id !== playerId));
@@ -164,7 +222,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
 
                             {openDropdownPlayerId === player.id && (
                                 <DropdownStatistics
-                                    onClose={() => setOpenDropdownPlayerId(null)}
+                                    onClose={handleStatistics}
                                     playerId={player.id}
                                     matchId={matchId}
                                     groupId={groupId}
@@ -251,64 +309,66 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                     </Button>
                 </div>
             ) : (
-                /* Scoreboard & Timer */
                 <Card className="flex flex-col items-center gap-6 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="flex items-center justify-between w-full max-w-lg px-4">
+                    <div className="flex items-center justify-center gap-4 md:gap-12 w-full px-2">
+                        {/* Home Score */}
                         <div className="flex flex-col items-center">
-                            <span className="text-gray-400 text-sm uppercase tracking-wider mb-2">Time A</span>
-                            <div className="text-6xl font-bold text-white bg-white/5 rounded-2xl p-4 min-w-[100px] text-center decoration-0">
+                            <span className="text-gray-400 text-xs md:text-sm uppercase tracking-wider mb-2">Time A</span>
+                            <div className="text-4xl md:text-6xl font-bold text-white bg-white/5 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center decoration-0">
                                 {homeScore}
                             </div>
                             <div className="flex gap-2 mt-2">
-                                <Button variant="secondary" onClick={() => setHomeScore(s => Math.max(0, s - 1))}>-</Button>
-                                <Button variant="primary" onClick={() => setHomeScore(s => s + 1)}>+</Button>
+                                <Button className="w-8 h-8 md:w-auto md:h-auto flex items-center justify-center" variant="secondary" onClick={() => setHomeScore(s => Math.max(0, s - 1))}>-</Button>
+                                <Button className="w-8 h-8 md:w-auto md:h-auto flex items-center justify-center" variant="primary" onClick={() => setHomeScore(s => s + 1)}>+</Button>
                             </div>
                         </div>
 
+                        {/* Timer */}
                         <div className="flex flex-col items-center gap-2">
-                            <div className="text-4xl font-mono text-primary font-bold tracking-widest flex items-center gap-2">
-                                <FaClock className="w-6 h-6" />
+                            <div className="text-3xl md:text-4xl font-mono text-primary font-bold tracking-widest flex items-center gap-2">
+                                <FaClock className="w-5 h-5 md:w-6 md:h-6" />
                                 {formatTime(time)}
                             </div>
-                            <span className="text-xs text-green-500 uppercase tracking-widest font-bold">
+                            <span className="text-[10px] md:text-xs text-green-500 uppercase tracking-widest font-bold whitespace-nowrap">
                                 {isRunning ? 'Em Andamento' : 'Pausado'}
                             </span>
                         </div>
 
+                        {/* Away Score */}
                         <div className="flex flex-col items-center">
-                            <span className="text-gray-400 text-sm uppercase tracking-wider mb-2">Time B</span>
-                            <div className="text-6xl font-bold text-white bg-white/5 rounded-2xl p-4 min-w-[100px] text-center">
+                            <span className="text-gray-400 text-xs md:text-sm uppercase tracking-wider mb-2">Time B</span>
+                            <div className="text-4xl md:text-6xl font-bold text-white bg-white/5 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center">
                                 {awayScore}
                             </div>
                             <div className="flex gap-2 mt-2">
-                                <Button variant="secondary" onClick={() => setAwayScore(s => Math.max(0, s - 1))}>-</Button>
-                                <Button variant="primary" onClick={() => setAwayScore(s => s + 1)}>+</Button>
+                                <Button className="w-8 h-8 md:w-auto md:h-auto flex items-center justify-center" variant="secondary" onClick={() => setAwayScore(s => Math.max(0, s - 1))}>-</Button>
+                                <Button className="w-8 h-8 md:w-auto md:h-auto flex items-center justify-center" variant="primary" onClick={() => setAwayScore(s => s + 1)}>+</Button>
                             </div>
                         </div>
                     </div>
 
                     {/* Match Controls */}
-                    <div className="w-full flex justify-center gap-4 mt-4">
+                    <div className="w-full flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 mt-4 px-4">
                         <Button
                             variant={isRunning ? "secondary" : "primary"}
                             onClick={() => setIsRunning(!isRunning)}
-                            className="w-40 flex items-center justify-center gap-2"
+                            className="w-full md:w-40 flex items-center justify-center gap-2"
                         >
                             {isRunning ? <><FaPause /> Pausar</> : <><FaPlay /> Continuar</>}
                         </Button>
                         <Button
                             variant="ghost"
                             onClick={onFinish}
-                            className="w-40 flex items-center gap-2 justify-center text-red-500 hover:bg-red-500/10 hover:text-red-400"
+                            className="w-full md:w-40 flex items-center gap-2 justify-center text-red-500 hover:bg-red-500/10 hover:text-red-400 border border-red-500/20"
                         >
                             <FaStop /> Finalizar
                         </Button>
                         <Button
                             variant="secondary"
                             onClick={() => resetTimer()}
-                            className="w-40 flex items-center gap-2 justify-center text-white hover:bg-white/10 hover:text-white"
+                            className="w-full md:w-40 flex items-center gap-2 justify-center text-white hover:bg-white/10 hover:text-white"
                         >
-                            <FaStop /> Zerar Cronometro
+                            <FaStop /> Zerar
                         </Button>
                     </div>
                 </Card>

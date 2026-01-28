@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { FaUsers, FaFutbol, FaTrophy, FaChartBar, FaSpinner, FaPlus } from "react-icons/fa";
+import { FaUsers, FaFutbol, FaTrophy, FaChartBar, FaSpinner, FaPlus, FaChevronDown, FaChevronUp } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa6";
 import Link from "next/link";
 import { IGroupDetails } from "@/interface/group.interface";
@@ -12,6 +12,7 @@ import Matches from "@/components/Matches";
 import CreateMatch from "@/components/CreateMatch";
 import Players from "@/components/Players";
 import { toast } from "sonner";
+import Overview from "@/components/Overview";
 
 export default function GroupPage() {
     const params = useParams();
@@ -20,6 +21,7 @@ export default function GroupPage() {
     const [group, setGroup] = useState<IGroupDetails | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
+    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
     const tabs = [
         { id: "overview", label: "Visão Geral", icon: FaChartBar },
         { id: "players", label: "Jogadores", icon: FaUsers },
@@ -91,7 +93,8 @@ export default function GroupPage() {
             </div>
 
             {/* Tabs */}
-            <div className="flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            {/* Tabs - Desktop */}
+            <div className="hidden md:flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
@@ -109,23 +112,57 @@ export default function GroupPage() {
                 })}
             </div>
 
+            {/* Tabs - Mobile (Dropdown) */}
+            <div className="md:hidden relative z-50">
+                <button
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="w-full flex items-center justify-between px-4 py-3 bg-surface/50 border border-white/10 rounded-xl text-white font-bold backdrop-blur-md transition-all active:scale-[0.98]"
+                >
+                    <div className="flex items-center gap-2">
+                        {(() => {
+                            const currentTab = tabs.find(t => t.id === activeTab);
+                            const Icon = currentTab?.icon || FaChartBar;
+                            return (
+                                <>
+                                    <Icon className="text-primary" />
+                                    <span>{currentTab?.label}</span>
+                                </>
+                            );
+                        })()}
+                    </div>
+                    {isMobileMenuOpen ? <FaChevronUp className="text-primary" /> : <FaChevronDown className="text-gray-400" />}
+                </button>
+
+                {isMobileMenuOpen && (
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#121212] border border-white/10 rounded-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                        {tabs.map((tab) => {
+                            const Icon = tab.icon;
+                            const isActive = activeTab === tab.id;
+                            return (
+                                <button
+                                    key={tab.id}
+                                    onClick={() => {
+                                        setActiveTab(tab.id);
+                                        setIsMobileMenuOpen(false);
+                                    }}
+                                    className={`w-full flex items-center gap-2 px-4 py-3 transition-colors ${isActive
+                                            ? "bg-primary/20 text-primary border-l-4 border-primary"
+                                            : "text-gray-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent"
+                                        }`}
+                                >
+                                    <Icon className={isActive ? "text-primary" : ""} />
+                                    {tab.label}
+                                </button>
+                            );
+                        })}
+                    </div>
+                )}
+            </div>
+
             {/* Content Area */}
             <div className="min-h-[300px] animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {activeTab === "overview" && (
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                        <div className="rounded-xl bg-surface/30 border border-white/5 p-6">
-                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                                <FaTrophy className="text-yellow-500" /> Destaques
-                            </h3>
-                            <p className="text-gray-500 text-sm italic">Em breve: estatísticas gerais do grupo.</p>
-                        </div>
-                        <div className="rounded-xl bg-surface/30 border border-white/5 p-6">
-                            <h3 className="text-lg font-bold text-white mb-4 flex items-center gap-2">
-                                <FaFutbol className="text-primary" /> Última Partida
-                            </h3>
-                            <p className="text-gray-500 text-sm italic">Nenhuma partida registrada ainda.</p>
-                        </div>
-                    </div>
+                    <Overview />
                 )}
 
                 {activeTab === "players" && (

@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaFutbol } from "react-icons/fa";
 import MatchInterface from "./MatchInterface";
 import { IGroupDetails } from "@/interface/group.interface";
@@ -7,6 +7,18 @@ import Button from "./ui/Button";
 export default function CreateMatch(props: { group: IGroupDetails }) {
     const { group } = props;
     const [isMatchActive, setIsMatchActive] = useState(false);
+
+    useEffect(() => {
+        const storedMatchId = localStorage.getItem('matchId');
+        if (storedMatchId) {
+            setIsMatchActive(true);
+        }
+    }, []);
+
+    const finishMatch = () => {
+        setIsMatchActive(false);
+        localStorage.removeItem('matchId');
+    };
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -28,7 +40,7 @@ export default function CreateMatch(props: { group: IGroupDetails }) {
             ) : (
                 <MatchInterface
                     players={group.players || []}
-                    onFinish={() => setIsMatchActive(false)}
+                    onFinish={finishMatch}
                     groupId={group.group.id}
                 />
             )}

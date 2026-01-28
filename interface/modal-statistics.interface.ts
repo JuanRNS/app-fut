@@ -26,7 +26,7 @@ export interface IResponseMatchStatistics {
 }
 
 export interface IDropdownStatisticsProps {
-    onClose: () => void;
+    onClose: (type?: 'GOAL' | 'ASSISTANCE', team?: Team) => void;
     playerId: string;
     matchId: string | null;
     groupId: string;

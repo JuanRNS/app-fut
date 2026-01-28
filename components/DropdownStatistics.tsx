@@ -3,11 +3,9 @@ import { FaFutbol, FaHandsHelping, FaSpinner } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { IDropdownStatisticsProps, IRequestMatchStatistics } from '@/interface/modal-statistics.interface'; // Typo in original filename preserved to avoid confusion
 
-
 export default function DropdownStatistics({ onClose, playerId, matchId, groupId, team }: IDropdownStatisticsProps) {
     const [isLoading, setIsLoading] = useState(false);
     const dropdownRef = useRef<HTMLDivElement>(null);
-
     useEffect(() => {
         const handleClickOutside = (event: MouseEvent) => {
             if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
@@ -49,7 +47,7 @@ export default function DropdownStatistics({ onClose, playerId, matchId, groupId
             }
 
             toast.success(type === 'GOAL' ? "Gol registrado!" : "Assistência registrada!");
-            onClose();
+            onClose(type, team);
         } catch (error) {
             toast.error("Erro ao registrar estatística");
         } finally {

@@ -40,6 +40,12 @@ export interface IMatchResponse {
     pagination: IPagination;
 }
 
+export interface IMatchResponseInterface {
+    match: IMatch;
+    goalsHome: number;
+    goalsAway: number;
+}
+
 export interface IPagination {
     page: number;
     limit: number;
