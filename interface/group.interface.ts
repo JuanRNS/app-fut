@@ -1,5 +1,6 @@
-import { IMatch, IPagination } from "./match.interface";
+import { IMatch } from "./match.interface";
 import { IPlayer } from "./player.interface";
+import { IPagination } from "./pagination.interface";
 
 export interface IRequestGroup {
     name: string;
