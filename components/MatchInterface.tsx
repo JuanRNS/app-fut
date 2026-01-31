@@ -29,7 +29,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
         if (storedMatchId) {
             handleGetMatch(storedMatchId);
         }
-    }, [groupId]); // Run once on mount (or if groupId changes)
+    }, [groupId]);
 
     useEffect(() => {
         let interval: NodeJS.Timeout;
@@ -61,7 +61,6 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
         if (!targetId) return;
 
         try {
-            // Correct URL based on file system app/api/group/[id]/[matchId]/route.ts
             const response = await fetch(`/api/group/${groupId}/${targetId}`);
 
             if (!response.ok) {
@@ -177,7 +176,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
     const availablePlayers = players.filter(p =>
         !teamA.some(ta => ta.id === p.id) &&
         !teamB.some(tb => tb.id === p.id)
-    );
+    ).sort((a, b) => a.name.localeCompare(b.name));
 
     const renderTeamSlot = (team: Team, index: number) => {
         const currentTeam = team === 'HOME' ? teamA : teamB;
@@ -387,7 +386,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                         <div className="p-5 border-b border-white/10 flex items-center justify-between bg-surface/50">
                             <h3 className="font-bold text-white text-lg flex items-center gap-2">
                                 <FaPlus className="text-primary" />
-                                Adicionar ao Time {selectingFor}
+                                Adicionar ao Time {selectingFor === 'HOME' ? 'A' : 'B'}
                             </h3>
                             <button
                                 onClick={() => setSelectingFor(null)}

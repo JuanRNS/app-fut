@@ -2,18 +2,27 @@ import MatchDetails from "./MatchDetails";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { IMatchResponse } from "@/interface/match.interface";
+import { IPagination } from "@/interface/pagination.interface";
+import Pagination from "./Pagination";
 
 export default function Matches({ groupId }: { groupId: string }) {
     const [matches, setMatches] = useState<IMatchResponse | null>(null);
+    const [pagination, setPagination] = useState<IPagination | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
     useEffect(() => {
         fetchGroup();
-    }, [groupId])
+    }, [groupId, currentPage])
 
-    const fetchGroup = async () => {
-        const response = await fetch(`/api/group/${groupId}`);
+    async function fetchGroup() {
+        const response = await fetch(`/api/group/${groupId}?page=${currentPage}&limit=5`);
         const data = await response.json();
         setMatches(data);
+        setPagination(data.pagination);
     }
+
+    const handlePageChange = (page: number) => {
+        setCurrentPage(page);
+    };
 
     if (!matches) {
         return (
@@ -33,7 +42,17 @@ export default function Matches({ groupId }: { groupId: string }) {
             ) : (
                 <p className="text-gray-500 text-center py-8">Nenhuma partida realizada.</p>
             )}
+            {pagination && (
+                <div className="flex justify-center mt-4 text-black">
+                    <Pagination
+                        currentPage={pagination.page}
+                        totalPages={pagination.totalPages}
+                        onPageChange={handlePageChange}
+                    />
+                </div>
+            )}
         </div>
+
     );
 }
 

@@ -146,8 +146,8 @@ export default function GroupPage() {
                                         setIsMobileMenuOpen(false);
                                     }}
                                     className={`w-full flex items-center gap-2 px-4 py-3 transition-colors ${isActive
-                                            ? "bg-primary/20 text-primary border-l-4 border-primary"
-                                            : "text-gray-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent"
+                                        ? "bg-primary/20 text-primary border-l-4 border-primary"
+                                        : "text-gray-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent"
                                         }`}
                                 >
                                     <Icon className={isActive ? "text-primary" : ""} />

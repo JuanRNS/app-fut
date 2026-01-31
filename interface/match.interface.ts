@@ -1,6 +1,7 @@
 import { Team } from "@/generated/prisma/enums";
 import { IResponseMatchStatistics } from "./modal-statistics.interface";
 import { IPlayer, IResponsePlayerMatch } from "./player.interface";
+import { IPagination } from "./pagination.interface";
 
 export interface IMatch {
     id: string;
@@ -44,11 +45,4 @@ export interface IMatchResponseInterface {
     match: IMatch;
     goalsHome: number;
     goalsAway: number;
-}
-
-export interface IPagination {
-    page: number;
-    limit: number;
-    total: number;
-    totalPages: number;
 }

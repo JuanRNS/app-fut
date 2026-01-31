@@ -1,3 +1,5 @@
+import { IPagination } from "./pagination.interface";
+
 export interface IPlayer {
     id: string;
     name: string;
@@ -20,6 +22,11 @@ export interface PlayerCardProps {
 
 export interface IResponsePlayerRanking extends IPlayer {
     goals: number;
+}
+
+export interface IRequestRanking {
+    players: IResponsePlayerRanking[];
+    pagination: IPagination;
 }
 
 export interface IResponsePlayerMatch extends IPlayer {

@@ -30,9 +30,7 @@ export default function CreatePlayer(props: { id: string, onSuccess?: () => void
             if (onSuccess) onSuccess();
         } catch (error) {
             console.error(error);
-            // Optionally handle error toast here if not handled globally or by parent.
-            // But checking previous context, error handling might be good here.
-            throw error; // Let it propagate or handle. The previous code threw error. 
+            throw error;
         } finally {
             setLoadingPlayer(false);
         }
