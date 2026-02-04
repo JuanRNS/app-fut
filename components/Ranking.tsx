@@ -1,5 +1,5 @@
 import { IPagination } from "@/interface/pagination.interface";
-import { IResponsePlayerRanking, IRequestRanking } from "@/interface/player.interface";
+import { IResponsePlayerRanking, IResponseRanking } from "@/interface/player.interface";
 import { useEffect, useState } from "react";
 import Pagination from "./Pagination";
 
@@ -14,7 +14,7 @@ export default function Ranking(props: { id: string }) {
 
     async function getRanking() {
         const response = await fetch(`/api/group/${props.id}/ranking?page=${currentPage}&limit=5`);
-        const data: IRequestRanking = await response.json();
+        const data: IResponseRanking = await response.json();
         setPlayers(data.players);
         setPagination(data.pagination);
     }

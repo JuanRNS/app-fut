@@ -22,9 +22,10 @@ export interface PlayerCardProps {
 
 export interface IResponsePlayerRanking extends IPlayer {
     goals: number;
+    name: string;
 }
 
-export interface IRequestRanking {
+export interface IResponseRanking {
     players: IResponsePlayerRanking[];
     pagination: IPagination;
 }
