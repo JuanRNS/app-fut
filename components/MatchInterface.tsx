@@ -236,7 +236,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
 
         if (hasStarted) {
             return (
-                <div key={index} className="w-full h-[72px] rounded-xl border-2 border-dashed border-white/5 bg-white/5 flex items-center justify-center text-white/10">
+                <div key={index} className="w-full h-[72px] rounded-xl border-2 border-dashed border-border bg-surface/50 flex items-center justify-center text-secondary/30">
                     <span className="text-sm">Vazio</span>
                 </div>
             );
@@ -249,7 +249,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                 className={`w-full h-[72px] rounded-xl border-2 border-dashed flex items-center justify-center gap-2 transition-all group
                     ${isGK
                         ? 'border-yellow-500/30 bg-yellow-500/5 text-yellow-500/50 hover:bg-yellow-500/10 hover:border-yellow-500/50 hover:text-yellow-500'
-                        : 'border-white/10 text-white/20 hover:text-primary hover:border-primary/50 hover:bg-primary/5 hover:text-primary'
+                        : 'border-border text-secondary/40 hover:text-primary hover:border-primary/50 hover:bg-primary/5 hover:text-primary'
                     }`}
             >
                 {isGK ? <FaUserShield /> : <FaPlus />}
@@ -263,13 +263,13 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
             {/* Players Team Selection */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Team A Data */}
-                <div className="bg-surface/30 rounded-xl p-6 border border-white/5 flex flex-col gap-4">
+                <div className="bg-surface rounded-xl p-6 border border-border flex flex-col gap-4">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
                             <div className="w-3 h-8 bg-primary rounded-full"></div>
-                            <h3 className="text-white font-bold text-xl">Time A</h3>
+                            <h3 className="text-foreground font-bold text-xl">Time A</h3>
                         </div>
-                        <span className="text-xs font-mono bg-white/5 px-3 py-1 rounded-full text-gray-400 border border-white/5">
+                        <span className="text-xs font-mono bg-surface/50 px-3 py-1 rounded-full text-secondary border border-border">
                             {teamA.length}/5
                         </span>
                     </div>
@@ -279,13 +279,13 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                 </div>
 
                 {/* Team B Data */}
-                <div className="bg-surface/30 rounded-xl p-6 border border-white/5 flex flex-col gap-4">
+                <div className="bg-surface rounded-xl p-6 border border-border flex flex-col gap-4">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
                             <div className="w-3 h-8 bg-blue-500 rounded-full"></div>
-                            <h3 className="text-white font-bold text-xl">Time B</h3>
+                            <h3 className="text-foreground font-bold text-xl">Time B</h3>
                         </div>
-                        <span className="text-xs font-mono bg-white/5 px-3 py-1 rounded-full text-gray-400 border border-white/5">
+                        <span className="text-xs font-mono bg-surface/50 px-3 py-1 rounded-full text-secondary border border-border">
                             {teamB.length}/5
                         </span>
                     </div>
@@ -312,8 +312,8 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                     <div className="flex items-center justify-center gap-4 md:gap-12 w-full px-2">
                         {/* Home Score */}
                         <div className="flex flex-col items-center">
-                            <span className="text-gray-400 text-xs md:text-sm uppercase tracking-wider mb-2">Time A</span>
-                            <div className="text-4xl md:text-6xl font-bold text-white bg-white/5 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center decoration-0">
+                            <span className="text-secondary text-xs md:text-sm uppercase tracking-wider mb-2">Time A</span>
+                            <div className="text-4xl md:text-6xl font-bold text-foreground bg-surface/50 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center decoration-0">
                                 {homeScore}
                             </div>
                             <div className="flex gap-2 mt-2">
@@ -335,8 +335,8 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
 
                         {/* Away Score */}
                         <div className="flex flex-col items-center">
-                            <span className="text-gray-400 text-xs md:text-sm uppercase tracking-wider mb-2">Time B</span>
-                            <div className="text-4xl md:text-6xl font-bold text-white bg-white/5 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center">
+                            <span className="text-secondary text-xs md:text-sm uppercase tracking-wider mb-2">Time B</span>
+                            <div className="text-4xl md:text-6xl font-bold text-foreground bg-surface/50 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center">
                                 {awayScore}
                             </div>
                             <div className="flex gap-2 mt-2">
@@ -365,7 +365,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                         <Button
                             variant="secondary"
                             onClick={() => resetTimer()}
-                            className="w-full md:w-40 flex items-center gap-2 justify-center text-white hover:bg-white/10 hover:text-white"
+                            className="w-full md:w-40 flex items-center gap-2 justify-center text-foreground hover:bg-hover hover:text-foreground"
                         >
                             <FaStop /> Zerar
                         </Button>
@@ -380,17 +380,17 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                     onClick={() => setSelectingFor(null)}
                 >
                     <div
-                        className="bg-[#1a1b26] rounded-2xl border border-white/10 w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh] shadow-2xl animate-in zoom-in-95 duration-200"
+                        className="bg-surface rounded-2xl border border-border w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh] shadow-2xl animate-in zoom-in-95 duration-200"
                         onClick={e => e.stopPropagation()}
                     >
-                        <div className="p-5 border-b border-white/10 flex items-center justify-between bg-surface/50">
-                            <h3 className="font-bold text-white text-lg flex items-center gap-2">
+                        <div className="p-5 border-b border-border flex items-center justify-between bg-surface/50">
+                            <h3 className="font-bold text-foreground text-lg flex items-center gap-2">
                                 <FaPlus className="text-primary" />
                                 Adicionar ao Time {selectingFor === 'HOME' ? 'A' : 'B'}
                             </h3>
                             <button
                                 onClick={() => setSelectingFor(null)}
-                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-hover text-foreground/60 hover:text-foreground transition-colors"
                             >
                                 <FaTimes />
                             </button>

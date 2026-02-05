@@ -17,7 +17,7 @@ export default function GroupCard({ group }: IGroupCardProps) {
 
     return (
         <div className="relative w-full max-w-md cursor-pointer" onClick={handleClick}> {/* Increased max-w-sm to max-w-md */}
-            <div className="relative rounded-2xl bg-surface/50 border border-white/10 backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,240,255,0.15)] flex flex-col gap-4 h-full min-h-[200px]">
+            <div className="relative rounded-2xl bg-surface/50 border border-border backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,240,255,0.15)] flex flex-col gap-4 h-full min-h-[200px]">
 
                 {/* Background Elements Container - Handles Overflow for decorations */}
                 <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
@@ -26,7 +26,7 @@ export default function GroupCard({ group }: IGroupCardProps) {
 
                 <div className="relative z-10 p-6 flex flex-col gap-4 h-full">
                     <div className="flex justify-between items-start gap-4">
-                        <h3 className="text-xl font-bold text-white group-hover:text-primary transition-colors duration-300 break-words flex-1">
+                        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 break-words flex-1">
                             {group.name}
                         </h3>
 
@@ -37,7 +37,7 @@ export default function GroupCard({ group }: IGroupCardProps) {
                                     setIsMenuOpen(!isMenuOpen);
                                 }}
                                 variant="ghost"
-                                className="p-2 text-gray-400 hover:text-white transition-colors rounded-full hover:bg-white/10"
+                                className="p-2 text-foreground/60 hover:text-foreground transition-colors rounded-full hover:bg-hover"
                             >
                                 <FaBars className="w-5 h-5" />
                             </Button>
@@ -52,10 +52,10 @@ export default function GroupCard({ group }: IGroupCardProps) {
                                             setIsMenuOpen(false);
                                         }}
                                     />
-                                    <div className="absolute right-0 top-full mt-2 w-36 bg-[#1a1b26] border border-white/10 rounded-lg shadow-xl z-50 overflow-hidden">
+                                    <div className="absolute right-0 top-full mt-2 w-36 bg-surface border border-border rounded-lg shadow-xl z-50 overflow-hidden">
                                         <Button
                                             variant="ghost"
-                                            className="w-full px-4 py-3 text-left text-sm text-gray-300 hover:bg-white/5 hover:text-white flex items-center gap-3 transition-colors rounded-none"
+                                            className="w-full px-4 py-3 text-left text-sm text-foreground/80 hover:bg-hover hover:text-foreground flex items-center gap-3 transition-colors rounded-none"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 toast.info(`Editar grupo ${group.name}`);
@@ -66,7 +66,7 @@ export default function GroupCard({ group }: IGroupCardProps) {
                                         </Button>
                                         <Button
                                             variant="ghost"
-                                            className="w-full px-4 py-3 text-left text-sm text-red-400 hover:bg-red-500/10 hover:text-red-300 flex items-center gap-3 transition-colors rounded-none"
+                                            className="w-full px-4 py-3 text-left text-sm text-red-500 hover:bg-red-500/10 hover:text-red-600 flex items-center gap-3 transition-colors rounded-none"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 toast.info(`Excluir grupo ${group.name}`);
@@ -82,7 +82,7 @@ export default function GroupCard({ group }: IGroupCardProps) {
                     </div>
 
                     {/* Description */}
-                    <p className="text-gray-400 text-sm line-clamp-3">
+                    <p className="text-foreground/60 text-sm line-clamp-3">
                         {group.description}
                     </p>
                 </div>

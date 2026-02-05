@@ -51,17 +51,17 @@ export default function Players(props: { group: IGroupDetails, fetchGroup: () =>
                     onClick={() => setIsModalOpen(false)}
                 >
                     <div
-                        className="bg-[#1a1b26] rounded-2xl border border-white/10 w-full max-w-lg overflow-hidden flex flex-col shadow-2xl animate-in zoom-in-95 duration-200"
+                        className="bg-surface rounded-2xl border border-border w-full max-w-lg overflow-hidden flex flex-col shadow-2xl animate-in zoom-in-95 duration-200"
                         onClick={e => e.stopPropagation()}
                     >
-                        <div className="p-5 border-b border-white/10 flex items-center justify-between bg-surface/50">
-                            <h3 className="font-bold text-white text-lg flex items-center gap-2">
+                        <div className="p-5 border-b border-border flex items-center justify-between bg-surface/50">
+                            <h3 className="font-bold text-foreground text-lg flex items-center gap-2">
                                 <FaPlus className="text-primary" />
                                 Adicionar Novo Jogador
                             </h3>
                             <button
                                 onClick={() => setIsModalOpen(false)}
-                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
+                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-hover text-foreground/60 hover:text-foreground transition-colors"
                             >
                                 <FaTimes />
                             </button>

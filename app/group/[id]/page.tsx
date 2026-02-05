@@ -60,7 +60,7 @@ export default function GroupPage() {
     if (!group) {
         return (
             <div className="flex flex-col items-center justify-center min-h-[50vh] gap-4">
-                <h2 className="text-xl text-white font-bold">Grupo não encontrado</h2>
+                <h2 className="text-xl text-primary font-bold">Grupo não encontrado</h2>
                 <Link href="/home" className="text-primary hover:underline">Voltar para Home</Link>
             </div>
         );
@@ -68,20 +68,20 @@ export default function GroupPage() {
 
     return (
         <div className="mx-auto max-w-4xl space-y-8 p-4">
-            <div className="flex-1 relative rounded-2xl bg-surface/50 border border-white/10 backdrop-blur-md p-6 overflow-hidden">
+            <div className="flex-1 relative rounded-2xl bg-surface border border-border backdrop-blur-md p-6 overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/5 rounded-full blur-[80px] -translate-y-1/2 translate-x-1/3 pointer-events-none" />
 
                 <div className="relative z-10 flex flex-col gap-4">
-                    <Link href="/home" className="flex items-center gap-2 text-gray-400 hover:text-white transition-colors w-fit">
+                    <Link href="/home" className="flex items-center gap-2 text-secondary hover:text-foreground transition-colors w-fit">
                         <FaArrowLeft /> Voltar
                     </Link>
 
                     <div>
-                        <h1 className="text-3xl font-bold text-white mb-2">{group.group.name}</h1>
-                        <p className="text-gray-400">{group.group.description}</p>
+                        <h1 className="text-3xl font-bold text-foreground mb-2">{group.group.name}</h1>
+                        <p className="text-secondary">{group.group.description}</p>
                     </div>
 
-                    <div className="flex gap-4 text-sm text-gray-400 mt-2">
+                    <div className="flex gap-4 text-sm text-secondary mt-2">
                         <span className="flex items-center gap-2">
                             <FaUsers className="text-primary" /> {group.players.length} Jogadores
                         </span>
@@ -92,8 +92,6 @@ export default function GroupPage() {
                 </div>
             </div>
 
-            {/* Tabs */}
-            {/* Tabs - Desktop */}
             <div className="hidden md:flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
@@ -112,11 +110,10 @@ export default function GroupPage() {
                 })}
             </div>
 
-            {/* Tabs - Mobile (Dropdown) */}
             <div className="md:hidden relative z-50">
                 <button
                     onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="w-full flex items-center justify-between px-4 py-3 bg-surface/50 border border-white/10 rounded-xl text-white font-bold backdrop-blur-md transition-all active:scale-[0.98]"
+                    className="w-full flex items-center justify-between px-4 py-3 bg-surface border border-border rounded-xl text-foreground font-bold backdrop-blur-md transition-all active:scale-[0.98]"
                 >
                     <div className="flex items-center gap-2">
                         {(() => {
@@ -130,11 +127,11 @@ export default function GroupPage() {
                             );
                         })()}
                     </div>
-                    {isMobileMenuOpen ? <FaChevronUp className="text-primary" /> : <FaChevronDown className="text-gray-400" />}
+                    {isMobileMenuOpen ? <FaChevronUp className="text-primary" /> : <FaChevronDown className="text-secondary" />}
                 </button>
 
                 {isMobileMenuOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-[#121212] border border-white/10 rounded-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
+                    <div className="absolute top-full left-0 right-0 mt-2 bg-surface border border-border rounded-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
                         {tabs.map((tab) => {
                             const Icon = tab.icon;
                             const isActive = activeTab === tab.id;
@@ -147,7 +144,7 @@ export default function GroupPage() {
                                     }}
                                     className={`w-full flex items-center gap-2 px-4 py-3 transition-colors ${isActive
                                         ? "bg-primary/20 text-primary border-l-4 border-primary"
-                                        : "text-gray-400 hover:bg-white/5 hover:text-white border-l-4 border-transparent"
+                                        : "text-secondary hover:bg-white/5 hover:text-foreground border-l-4 border-transparent"
                                         }`}
                                 >
                                     <Icon className={isActive ? "text-primary" : ""} />
@@ -159,7 +156,6 @@ export default function GroupPage() {
                 )}
             </div>
 
-            {/* Content Area */}
             <div className="min-h-[300px] animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {activeTab === "overview" && (
                     <Overview />

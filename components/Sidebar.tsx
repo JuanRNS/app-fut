@@ -20,19 +20,19 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             />
 
             <aside
-                className={`fixed left-0 top-0 z-40 h-screen w-64 transition-transform duration-300 bg-surface border-r border-white/5 ${isOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed left-0 top-0 z-40 h-screen w-64 transition-transform duration-300 bg-[var(--header-background)] border-r border-white/5 ${isOpen ? "translate-x-0" : "-translate-x-full"
                     }`}
             >
                 <div className="flex h-full flex-col overflow-y-auto px-3 py-4">
                     <div className="flex items-center justify-between mb-10 pl-2.5">
                         <Link href="/home" className="flex items-center w-full justify-between" onClick={onClose}>
-                            <span className="self-center whitespace-nowrap text-xl font-semibold text-primary font-mono tracking-tighter">
+                            <span className="self-center whitespace-nowrap text-xl font-semibold text-[var(--header-foreground)] font-mono tracking-tighter">
                                 FUT APP
                             </span>
                         </Link>
                         <button
                             onClick={onClose}
-                            className="p-2 text-gray-400 hover:text-white rounded-lg hover:bg-white/10"
+                            className="p-2 text-[var(--header-foreground)]/60 hover:text-[var(--header-foreground)] rounded-lg hover:bg-white/10"
                         >
                             <CgClose />
                         </button>
@@ -45,7 +45,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 onClick={onClose}
                                 className={`group flex items-center rounded-lg p-2 transition-all duration-200 ${isActive("/home")
                                     ? "bg-primary/10 text-primary shadow-[0_0_10px_rgba(0,240,255,0.2)] border border-primary/20"
-                                    : "text-gray-400 hover:bg-white/5 hover:text-white"
+                                    : "text-[var(--header-foreground)]/60 hover:bg-white/10 hover:text-[var(--header-foreground)]"
                                     }`}
                             >
                                 <FaHouse />
@@ -58,7 +58,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 href="/login"
                                 className={`group flex items-center rounded-lg p-2 transition-all duration-200 ${isActive("/login")
                                     ? "bg-primary/10 text-primary shadow-[0_0_10px_rgba(0,240,255,0.2)] border border-primary/20"
-                                    : "text-gray-400 hover:bg-white/5 hover:text-white"
+                                    : "text-[var(--header-foreground)]/60 hover:bg-white/10 hover:text-[var(--header-foreground)]"
                                     }`}
                             >
                                 <FaOutdent />

@@ -25,23 +25,23 @@ export default function Ranking(props: { id: string }) {
 
     return (
         <div className="space-y-4">
-            <div className="rounded-xl bg-surface/30 border border-white/5 overflow-hidden">
-                <table className="w-full text-left">
-                    <thead className="bg-white/5 text-gray-400 text-sm uppercase">
+            <div className="rounded-xl bg-surface border border-white/10 overflow-hidden shadow-sm">
+                <table className="w-full text-center">
+                    <thead className="bg-hover/50 text-foreground/70 text-sm uppercase">
                         <tr>
-                            <th className="p-4 font-medium">Pos</th>
-                            <th className="p-4 font-medium">Jogador</th>
-                            <th className="p-4 font-medium text-center">Gols</th>
+                            <th className="p-4 font-large">Pos</th>
+                            <th className="p-4 font-large">Jogador</th>
+                            <th className="p-4 font-large text-center">Gols</th>
                         </tr>
                     </thead>
-                    <tbody className="divide-y divide-white/5">
+                    <tbody className="divide-y divide-white/10 text-foreground font-bold">
                         {players.map((player, index) => (
-                            <tr key={player.id}>
-                                <td className="p-4 font-medium">
+                            <tr key={player.id} className="hover:bg-hover/30 transition-colors">
+                                <td className="p-4 font-large">
                                     {(currentPage - 1) * 5 + index + 1}
                                 </td>
-                                <td className="p-4 font-medium">{player.name}</td>
-                                <td className="p-4 font-medium text-center">{player.goals}</td>
+                                <td className="p-4 font-large">{player.name}</td>
+                                <td className="p-4 font-large text-center">{player.goals}</td>
                             </tr>
                         ))}
                     </tbody>
@@ -49,7 +49,7 @@ export default function Ranking(props: { id: string }) {
             </div>
 
             {pagination && (
-                <div className="flex justify-center mt-4 text-black">
+                <div className="flex justify-center mt-4 text-foreground">
                     <Pagination
                         currentPage={pagination.page}
                         totalPages={pagination.totalPages}
