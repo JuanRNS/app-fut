@@ -14,7 +14,7 @@ export default function Matches({ groupId }: { groupId: string }) {
     }, [groupId, currentPage])
 
     async function fetchGroup() {
-        const response = await fetch(`/api/group/${groupId}?page=${currentPage}&limit=5`);
+        const response = await fetch(`/api/group/${groupId}/match?page=${currentPage}&limit=5`);
         const data = await response.json();
         setMatches(data);
         setPagination(data.pagination);

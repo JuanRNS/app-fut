@@ -1,18 +1,27 @@
 "use client";
 
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { FaBars, FaPen, FaTrash } from 'react-icons/fa6';
 import Button from './ui/Button';
 import { PlayerCardProps } from '@/interface/player.interface';
 import { toast } from 'sonner';
 
-export default function PlayerCard({ name, id, onClick, onDelete, onEdit, isMatch }: PlayerCardProps) {
+export default function PlayerCard({ name, id, onClick, onDelete, onEdit, isMatch, isSelected }: PlayerCardProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [selectedPlayer, setSelectedPlayer] = useState(isSelected);
+
+    useEffect(() => {
+        setSelectedPlayer(isSelected);
+    }, [isSelected]);
 
     return (
         <div
             onClick={onClick}
-            className={`relative rounded-xl bg-surface/30 border border-border p-4 flex items-center justify-between gap-3 transition-colors ${onClick ? 'cursor-pointer hover:bg-hover/30' : ''}`}
+            className={`
+                relative rounded-xl bg-surface/30 border border-border p-4 flex items-center justify-between gap-3 transition-colors 
+                ${onClick ? 'cursor-pointer hover:bg-hover/30' : ''}
+                ${selectedPlayer ? 'border-primary' : ''}
+            `}
         >
             <div className="flex items-center gap-3">
                 <div className="w-10 h-10 rounded-full bg-gradient-to-br from-primary to-blue-600 flex items-center justify-center text-black font-bold shadow-lg shadow-primary/20">

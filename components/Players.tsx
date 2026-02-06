@@ -1,17 +1,33 @@
-import { IGroupDetails } from "@/interface/group.interface";
 import PlayerCard from "./PlayerCard";
 import { useEffect, useState } from "react";
 import Button from "./ui/Button";
-import { FaPlus, FaTimes } from "react-icons/fa";
+import { FaPlus, FaTimes, FaSpinner } from "react-icons/fa";
 import CreatePlayer from "./CreatePlayer";
+import { IPlayer } from "@/interface/player.interface";
+import { toast } from "sonner";
 
-export default function Players(props: { group: IGroupDetails, fetchGroup: () => void }) {
-    const { group, fetchGroup } = props;
+export default function Players(props: { groupId: string }) {
+    const { groupId } = props;
+    const [players, setPlayers] = useState<IPlayer[]>([]);
+    const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
 
+    const fetchPlayers = async () => {
+        try {
+            const response = await fetch(`/api/group/${groupId}/player`);
+            if (!response.ok) throw new Error("Falha ao buscar jogadores");
+            const data = await response.json();
+            setPlayers(data || []);
+        } catch (error) {
+            toast.error("Erro ao buscar jogadores");
+        } finally {
+            setLoading(false);
+        }
+    };
+
     useEffect(() => {
-        fetchGroup();
-    }, []);
+        fetchPlayers();
+    }, [groupId]);
 
     const handleDeletePlayer = async (id: string) => {
         const response = await fetch(`/api/group/${id}/player`, {
@@ -25,8 +41,17 @@ export default function Players(props: { group: IGroupDetails, fetchGroup: () =>
         if (!response.ok) {
             throw new Error("Erro ao deletar jogador");
         }
-        fetchGroup();
+        fetchPlayers();
     }
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[300px]">
+                <FaSpinner className="w-8 h-8 animate-spin text-primary" />
+            </div>
+        );
+    }
+
     return (
         <div className="flex flex-col gap-6">
             <div className="flex justify-end">
@@ -36,8 +61,8 @@ export default function Players(props: { group: IGroupDetails, fetchGroup: () =>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {group.players?.length > 0 ? (
-                    group.players.map((player) => (
+                {players?.length > 0 ? (
+                    players.map((player) => (
                         <PlayerCard key={player.id} name={player.name} id={player.id} onDelete={() => handleDeletePlayer(player.id)} />
                     ))
                 ) : (
@@ -67,8 +92,8 @@ export default function Players(props: { group: IGroupDetails, fetchGroup: () =>
                             </button>
                         </div>
                         <div className="p-6">
-                            <CreatePlayer id={group.group.id} onSuccess={() => {
-                                fetchGroup();
+                            <CreatePlayer id={groupId} onSuccess={() => {
+                                fetchPlayers();
                                 setIsModalOpen(false);
                             }} />
                         </div>

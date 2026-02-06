@@ -1,24 +1,49 @@
 import { useEffect, useState } from "react";
-import { FaFutbol } from "react-icons/fa";
+import { FaFutbol, FaSpinner } from "react-icons/fa";
 import MatchInterface from "./MatchInterface";
-import { IGroupDetails } from "@/interface/group.interface";
 import Button from "./ui/Button";
+import { IPlayer } from "@/interface/player.interface";
+import { toast } from "sonner";
 
-export default function CreateMatch(props: { group: IGroupDetails }) {
-    const { group } = props;
+export default function CreateMatch(props: { groupId: string }) {
+    const { groupId } = props;
     const [isMatchActive, setIsMatchActive] = useState(false);
+    const [players, setPlayers] = useState<IPlayer[]>([]);
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const storedMatchId = localStorage.getItem('matchId');
         if (storedMatchId) {
             setIsMatchActive(true);
         }
-    }, []);
+        fetchPlayers();
+    }, [groupId]);
+
+    const fetchPlayers = async () => {
+        try {
+            const response = await fetch(`/api/group/${groupId}/player`);
+            if (!response.ok) throw new Error("Falha ao buscar jogadores");
+            const data = await response.json();
+            setPlayers(data || []);
+        } catch (error) {
+            toast.error("Erro ao buscar jogadores");
+        } finally {
+            setLoading(false);
+        }
+    };
 
     const finishMatch = () => {
         setIsMatchActive(false);
         localStorage.removeItem('matchId');
     };
+
+    if (loading) {
+        return (
+            <div className="flex items-center justify-center min-h-[300px]">
+                <FaSpinner className="w-8 h-8 animate-spin text-primary" />
+            </div>
+        );
+    }
 
     return (
         <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
@@ -39,9 +64,9 @@ export default function CreateMatch(props: { group: IGroupDetails }) {
                 </div>
             ) : (
                 <MatchInterface
-                    players={group.players || []}
+                    players={players}
                     onFinish={finishMatch}
-                    groupId={group.group.id}
+                    groupId={groupId}
                 />
             )}
         </div>

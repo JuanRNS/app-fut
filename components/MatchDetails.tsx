@@ -43,9 +43,8 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
 
     return (
         <div className="flex flex-col rounded-xl bg-surface border border-border transition-all duration-300 relative">
-            {/* Cabeçalho da Partida */}
             <div className="p-4 flex justify-between items-center hover:bg-hover transition-colors">
-                <span className="text-secondary text-sm">{new Date(match.createdAt).toLocaleDateString()}</span>
+                <span className="text-secondary text-sm font-bold">{new Date(match.createdAt).toLocaleDateString()}</span>
                 <span className="text-foreground font-bold">Partida</span>
 
                 {isExpanded ? (

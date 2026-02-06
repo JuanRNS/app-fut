@@ -2,12 +2,7 @@
 
 import { createContext, useContext, useEffect, useState } from "react";
 
-type Theme = "dark" | "light";
-
-interface ThemeContextType {
-    theme: Theme;
-    toggleTheme: () => void;
-}
+import { ThemeContextType, Theme } from "../interface/theme.interface";
 
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
@@ -15,13 +10,11 @@ export function ThemeProvider({ children }: { children: React.ReactNode }) {
     const [theme, setTheme] = useState<Theme>("dark");
 
     useEffect(() => {
-        // Check localStorage or system preference
         const savedTheme = localStorage.getItem("theme") as Theme | null;
         if (savedTheme) {
             setTheme(savedTheme);
             document.documentElement.setAttribute("data-theme", savedTheme);
         } else {
-            // Default to dark
             document.documentElement.setAttribute("data-theme", "dark");
         }
     }, []);

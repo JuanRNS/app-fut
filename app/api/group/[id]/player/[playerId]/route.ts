@@ -36,3 +36,20 @@ export async function PUT(request: Request, { params }: { params: Promise<{ id: 
         return NextResponse.json({ message: "Erro ao atualizar jogador" }, { status: 500 })
     }
 }
+
+
+export async function DELETE(request: Request, { params }: { params: Promise<{ id: string, playerId: string }> }) {
+    const { id, playerId } = await params;
+    try {
+        const players = await prisma.player.delete({
+            where: {
+                id: playerId,
+                groupId: id
+            }
+        });
+        return NextResponse.json(players, { status: 200 })
+    } catch (error) {
+        console.log(error)
+        return NextResponse.json({ message: "Erro ao deletar jogador" }, { status: 500 })
+    }
+}

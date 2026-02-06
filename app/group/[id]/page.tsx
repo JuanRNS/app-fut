@@ -18,7 +18,7 @@ export default function GroupPage() {
     const params = useParams();
     const id = params?.id as string;
 
-    const [group, setGroup] = useState<IGroupDetails | null>(null);
+    const [group, setGroup] = useState<{ id: string; name: string; description: string } | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -37,7 +37,11 @@ export default function GroupPage() {
             const response = await fetch(`/api/group/${id}`);
             if (!response.ok) throw new Error("Falha ao buscar grupo");
             const data = await response.json();
-            setGroup(data);
+            setGroup({
+                id: data.id,
+                name: data.name,
+                description: data.description,
+            });
         } catch (error) {
             toast.error("Erro ao buscar grupo");
         } finally {
@@ -77,17 +81,8 @@ export default function GroupPage() {
                     </Link>
 
                     <div>
-                        <h1 className="text-3xl font-bold text-foreground mb-2">{group.group.name}</h1>
-                        <p className="text-secondary">{group.group.description}</p>
-                    </div>
-
-                    <div className="flex gap-4 text-sm text-secondary mt-2">
-                        <span className="flex items-center gap-2">
-                            <FaUsers className="text-primary" /> {group.players.length} Jogadores
-                        </span>
-                        <span className="flex items-center gap-2">
-                            <FaFutbol className="text-primary" /> {group.matches.length} Partidas
-                        </span>
+                        <h1 className="text-3xl font-bold text-foreground mb-2">{group.name}</h1>
+                        <p className="text-secondary">{group.description}</p>
                     </div>
                 </div>
             </div>
@@ -158,15 +153,15 @@ export default function GroupPage() {
 
             <div className="min-h-[300px] animate-in fade-in slide-in-from-bottom-4 duration-500">
                 {activeTab === "overview" && (
-                    <Overview />
+                    <Overview groupId={id} />
                 )}
 
                 {activeTab === "players" && (
-                    <Players group={group} fetchGroup={fetchGroup} />
+                    <Players groupId={id} />
                 )}
 
                 {activeTab === "createMatch" && (
-                    <CreateMatch group={group} />
+                    <CreateMatch groupId={id} />
                 )}
 
                 {activeTab === "matches" && (
