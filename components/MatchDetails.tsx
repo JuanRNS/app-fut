@@ -42,11 +42,10 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
     };
 
     return (
-        <div className="flex flex-col rounded-xl bg-surface/30 border border-white/5 transition-all duration-300 relative">
-            {/* Cabeçalho da Partida */}
-            <div className="p-4 flex justify-between items-center hover:bg-white/5 transition-colors">
-                <span className="text-gray-400 text-sm">{new Date(match.createdAt).toLocaleDateString()}</span>
-                <span className="text-white font-bold">Partida</span>
+        <div className="flex flex-col rounded-xl bg-surface border border-border transition-all duration-300 relative">
+            <div className="p-4 flex justify-between items-center hover:bg-hover transition-colors">
+                <span className="text-secondary text-sm font-bold">{new Date(match.createdAt).toLocaleDateString()}</span>
+                <span className="text-foreground font-bold">Partida</span>
 
                 {isExpanded ? (
                     <button
@@ -58,7 +57,7 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
                 ) : (
                     <div className="relative">
                         <button
-                            className="text-gray-400 hover:text-white p-2 rounded-full hover:bg-white/10 transition-colors"
+                            className="text-secondary hover:text-foreground p-2 rounded-full hover:bg-hover transition-colors"
                             onClick={() => setIsDropdownOpen(!isDropdownOpen)}
                         >
                             <FaEllipsisV />
@@ -70,24 +69,24 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
                                     className="fixed inset-0 z-10"
                                     onClick={() => setIsDropdownOpen(false)}
                                 />
-                                <div className="absolute right-0 mt-2 w-40 bg-[#1a1b26] rounded-xl border border-white/10 shadow-2xl z-20 overflow-hidden flex flex-col py-1">
+                                <div className="absolute right-0 mt-2 w-40 bg-surface rounded-xl border border-border shadow-2xl z-20 overflow-hidden flex flex-col py-1">
                                     <button
                                         onClick={toggleDetails}
-                                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors text-left w-full cursor-pointer"
+                                        className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-hover hover:text-foreground transition-colors text-left w-full cursor-pointer"
                                     >
                                         <FaEye className="text-primary" />
                                         Visualizar
                                     </button>
                                     <button
                                         onClick={() => setIsDropdownOpen(false)}
-                                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors text-left w-full cursor-pointer"
+                                        className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-hover hover:text-foreground transition-colors text-left w-full cursor-pointer"
                                     >
                                         <FaEdit className="text-blue-400" />
                                         Editar
                                     </button>
                                     <button
                                         onClick={handleDelete}
-                                        className="flex items-center gap-3 px-4 py-3 text-sm text-gray-300 hover:bg-white/5 hover:text-white transition-colors text-left w-full cursor-pointer"
+                                        className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-hover hover:text-foreground transition-colors text-left w-full cursor-pointer"
                                     >
                                         <FaTrash className="text-red-400" />
                                         Deletar
@@ -101,20 +100,20 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
 
             {/* Painel de Expansão */}
             {isExpanded && (
-                <div className="bg-black/20 p-4 border-t border-white/5 space-y-4 animate-in slide-in-from-top-2 duration-200">
+                <div className="bg-surface/50 p-4 border-t border-border space-y-4 animate-in slide-in-from-top-2 duration-200">
                     {loading ? (
-                        <p className="text-center text-gray-500 text-sm italic">Carregando detalhes...</p>
+                        <p className="text-center text-secondary text-sm italic">Carregando detalhes...</p>
                     ) : details ? (
                         <>
                             {/* Placar */}
-                            <div className="flex justify-center items-center gap-8 text-2xl font-bold text-white">
+                            <div className="flex justify-center items-center gap-8 text-2xl font-bold text-foreground">
                                 <div className="flex flex-col items-center gap-1">
-                                    <span className="text-sm font-normal text-gray-400">Time A</span>
+                                    <span className="text-sm font-normal text-secondary">Time A</span>
                                     <span className="text-blue-400">{details.goalsHome}</span>
                                 </div>
-                                <span className="text-gray-600">x</span>
+                                <span className="text-secondary">x</span>
                                 <div className="flex flex-col items-center gap-1">
-                                    <span className="text-sm font-normal text-gray-400">Time B</span>
+                                    <span className="text-sm font-normal text-secondary">Time B</span>
                                     <span className="text-red-400">{details.goalsAway}</span>
                                 </div>
                             </div>
@@ -122,21 +121,21 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
                             {/* Lista de Goleadores */}
                             {details.players && details.players.length > 0 ? (
                                 <div className="space-y-2">
-                                    <h4 className="text-sm font-medium text-gray-400 border-b border-white/5 pb-1">Gols</h4>
+                                    <h4 className="text-sm font-medium text-secondary border-b border-border pb-1">Gols</h4>
                                     <div className="grid grid-cols-1 gap-2">
                                         {details.players.map((player) => (
                                             <div key={player.id} className="flex justify-between items-center text-sm">
                                                 <div className="flex items-center gap-2">
                                                     <span className={`w-2 h-2 rounded-full ${player.team === 'HOME' ? 'bg-blue-400' : 'bg-red-400'}`} />
-                                                    <span className="text-gray-200">{player.name}</span>
+                                                    <span className="text-foreground">{player.name}</span>
                                                 </div>
-                                                <span className="text-white font-bold">{player.goals} {player.goals === 1 ? 'gol' : 'gols'}</span>
+                                                <span className="text-foreground font-bold">{player.goals} {player.goals === 1 ? 'gol' : 'gols'}</span>
                                             </div>
                                         ))}
                                     </div>
                                 </div>
                             ) : (
-                                <p className="text-center text-gray-500 text-sm py-2">0 x 0 (Sem marcadores)</p>
+                                <p className="text-center text-secondary text-sm py-2">0 x 0 (Sem marcadores)</p>
                             )}
                         </>
                     ) : (

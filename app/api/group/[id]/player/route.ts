@@ -19,17 +19,17 @@ export async function POST(request: Request, { params }: { params: Promise<{ id:
     }
 }
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string }> }) {
+
+export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
     const { id } = await params;
     try {
-        const players = await prisma.player.delete({
+        const players = await prisma.player.findMany({
             where: {
-                id
+                groupId: id
             }
         });
         return NextResponse.json(players, { status: 200 })
     } catch (error) {
-        console.log(error)
-        return NextResponse.json({ message: "Erro ao deletar jogador" }, { status: 500 })
+        return NextResponse.json({ message: "Erro ao buscar jogadores" }, { status: 500 })
     }
 }

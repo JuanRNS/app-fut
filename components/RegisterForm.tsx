@@ -8,6 +8,8 @@ import Button from '@/components/ui/Button';
 import DynamicForm from '@/components/ui/DynamicForm';
 import { toast } from 'sonner';
 import Link from 'next/link';
+import { useTheme } from './ThemeProvider';
+import { FaMoon, FaSun } from 'react-icons/fa';
 
 export default function RegisterForm() {
     const [name, setName] = useState("");
@@ -16,6 +18,7 @@ export default function RegisterForm() {
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
     const router = useRouter();
+    const { theme, toggleTheme } = useTheme();
 
     const handleRegister = async (e: React.FormEvent) => {
         setLoading(true);
@@ -48,6 +51,17 @@ export default function RegisterForm() {
 
     return (
         <Card className="w-full max-w-md relative z-10 backdrop-blur-xl border-white/5">
+            <button
+                onClick={toggleTheme}
+                className="absolute top-4 right-4 p-2 text-gray-400 hover:text-foreground rounded-lg hover:bg-hover transition-colors z-20"
+                title={theme === "dark" ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
+            >
+                {theme === "dark" ? (
+                    <FaSun />
+                ) : (
+                    <FaMoon />
+                )}
+            </button>
             <div className="flex flex-col items-center mb-8">
                 <div className="w-20 h-20 bg-gradient-to-tr from-primary to-secondary rounded-full flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(0,240,255,0.4)]">
                     <span className="text-3xl">📝</span>

@@ -5,9 +5,10 @@ import Card from './ui/Card';
 import PlayerCard from './PlayerCard';
 import DropdownStatistics from './DropdownStatistics';
 import { IMatch, IMatchInterfaceProps, IMatchPlayer, IMatchResponse, IMatchResponseInterface } from '@/interface/match.interface';
-import { IPlayer } from '@/interface/player.interface';
+import { IPlayer, IPlayerMatch } from '@/interface/player.interface';
 import { toast } from 'sonner';
 import { Team } from '@/generated/prisma/enums';
+import PlayerSelectionModal from './modais/PlayerSelectionModal';
 
 export default function MatchInterface({ players, onFinish, groupId }: IMatchInterfaceProps) {
     const [time, setTime] = useState(0);
@@ -64,12 +65,11 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
             const response = await fetch(`/api/group/${groupId}/${targetId}`);
 
             if (!response.ok) {
-                console.error("Match fetch failed");
+                toast.error("Erro ao recuperar partida");
                 return;
             }
 
             const data: IMatchResponseInterface = await response.json();
-            console.log(data);
             if (data.match) {
                 localStorage.setItem('matchId', data.match.id);
                 setMatchId(data.match.id);
@@ -89,7 +89,6 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                 setIsRunning(false);
             }
         } catch (error) {
-            console.error(error);
             toast.error("Erro ao recuperar partida");
         }
     };
@@ -146,15 +145,6 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
         }
     };
 
-    const handleAddPlayer = (player: IPlayer) => {
-        if (selectingFor === 'HOME') {
-            if (teamA.length < 5) setTeamA(prev => [...prev, player]);
-        } else if (selectingFor === 'AWAY') {
-            if (teamB.length < 5) setTeamB(prev => [...prev, player]);
-        }
-        setSelectingFor(null);
-    };
-
     const handleRemovePlayer = (team: Team, playerId: string) => {
         if (hasStarted) return;
 
@@ -172,11 +162,6 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
             setOpenDropdownPlayerId(playerId);
         }
     };
-
-    const availablePlayers = players.filter(p =>
-        !teamA.some(ta => ta.id === p.id) &&
-        !teamB.some(tb => tb.id === p.id)
-    ).sort((a, b) => a.name.localeCompare(b.name));
 
     const renderTeamSlot = (team: Team, index: number) => {
         const currentTeam = team === 'HOME' ? teamA : teamB;
@@ -236,7 +221,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
 
         if (hasStarted) {
             return (
-                <div key={index} className="w-full h-[72px] rounded-xl border-2 border-dashed border-white/5 bg-white/5 flex items-center justify-center text-white/10">
+                <div key={index} className="w-full h-[72px] rounded-xl border-2 border-dashed border-border bg-surface/50 flex items-center justify-center text-secondary/30">
                     <span className="text-sm">Vazio</span>
                 </div>
             );
@@ -249,7 +234,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                 className={`w-full h-[72px] rounded-xl border-2 border-dashed flex items-center justify-center gap-2 transition-all group
                     ${isGK
                         ? 'border-yellow-500/30 bg-yellow-500/5 text-yellow-500/50 hover:bg-yellow-500/10 hover:border-yellow-500/50 hover:text-yellow-500'
-                        : 'border-white/10 text-white/20 hover:text-primary hover:border-primary/50 hover:bg-primary/5 hover:text-primary'
+                        : 'border-border text-secondary/40 hover:text-primary hover:border-primary/50 hover:bg-primary/5 hover:text-primary'
                     }`}
             >
                 {isGK ? <FaUserShield /> : <FaPlus />}
@@ -263,13 +248,13 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
             {/* Players Team Selection */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {/* Team A Data */}
-                <div className="bg-surface/30 rounded-xl p-6 border border-white/5 flex flex-col gap-4">
+                <div className="bg-surface rounded-xl p-6 border border-border flex flex-col gap-4">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
                             <div className="w-3 h-8 bg-primary rounded-full"></div>
-                            <h3 className="text-white font-bold text-xl">Time A</h3>
+                            <h3 className="text-foreground font-bold text-xl">Time A</h3>
                         </div>
-                        <span className="text-xs font-mono bg-white/5 px-3 py-1 rounded-full text-gray-400 border border-white/5">
+                        <span className="text-xs font-mono bg-surface/50 px-3 py-1 rounded-full text-secondary border border-border">
                             {teamA.length}/5
                         </span>
                     </div>
@@ -279,13 +264,13 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                 </div>
 
                 {/* Team B Data */}
-                <div className="bg-surface/30 rounded-xl p-6 border border-white/5 flex flex-col gap-4">
+                <div className="bg-surface rounded-xl p-6 border border-border flex flex-col gap-4">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
                             <div className="w-3 h-8 bg-blue-500 rounded-full"></div>
-                            <h3 className="text-white font-bold text-xl">Time B</h3>
+                            <h3 className="text-foreground font-bold text-xl">Time B</h3>
                         </div>
-                        <span className="text-xs font-mono bg-white/5 px-3 py-1 rounded-full text-gray-400 border border-white/5">
+                        <span className="text-xs font-mono bg-surface/50 px-3 py-1 rounded-full text-secondary border border-border">
                             {teamB.length}/5
                         </span>
                     </div>
@@ -312,8 +297,8 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                     <div className="flex items-center justify-center gap-4 md:gap-12 w-full px-2">
                         {/* Home Score */}
                         <div className="flex flex-col items-center">
-                            <span className="text-gray-400 text-xs md:text-sm uppercase tracking-wider mb-2">Time A</span>
-                            <div className="text-4xl md:text-6xl font-bold text-white bg-white/5 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center decoration-0">
+                            <span className="text-secondary text-xs md:text-sm uppercase tracking-wider mb-2">Time A</span>
+                            <div className="text-4xl md:text-6xl font-bold text-foreground bg-surface/50 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center decoration-0">
                                 {homeScore}
                             </div>
                             <div className="flex gap-2 mt-2">
@@ -335,8 +320,8 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
 
                         {/* Away Score */}
                         <div className="flex flex-col items-center">
-                            <span className="text-gray-400 text-xs md:text-sm uppercase tracking-wider mb-2">Time B</span>
-                            <div className="text-4xl md:text-6xl font-bold text-white bg-white/5 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center">
+                            <span className="text-secondary text-xs md:text-sm uppercase tracking-wider mb-2">Time B</span>
+                            <div className="text-4xl md:text-6xl font-bold text-foreground bg-surface/50 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center">
                                 {awayScore}
                             </div>
                             <div className="flex gap-2 mt-2">
@@ -365,7 +350,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                         <Button
                             variant="secondary"
                             onClick={() => resetTimer()}
-                            className="w-full md:w-40 flex items-center gap-2 justify-center text-white hover:bg-white/10 hover:text-white"
+                            className="w-full md:w-40 flex items-center gap-2 justify-center text-foreground hover:bg-hover hover:text-foreground"
                         >
                             <FaStop /> Zerar
                         </Button>
@@ -373,50 +358,16 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                 </Card>
             )}
 
-            {/* Player Selection Modal */}
             {selectingFor && (
-                <div
-                    className="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm animate-in fade-in duration-200"
-                    onClick={() => setSelectingFor(null)}
-                >
-                    <div
-                        className="bg-[#1a1b26] rounded-2xl border border-white/10 w-full max-w-lg overflow-hidden flex flex-col max-h-[80vh] shadow-2xl animate-in zoom-in-95 duration-200"
-                        onClick={e => e.stopPropagation()}
-                    >
-                        <div className="p-5 border-b border-white/10 flex items-center justify-between bg-surface/50">
-                            <h3 className="font-bold text-white text-lg flex items-center gap-2">
-                                <FaPlus className="text-primary" />
-                                Adicionar ao Time {selectingFor === 'HOME' ? 'A' : 'B'}
-                            </h3>
-                            <button
-                                onClick={() => setSelectingFor(null)}
-                                className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-white/10 text-gray-400 hover:text-white transition-colors"
-                            >
-                                <FaTimes />
-                            </button>
-                        </div>
-
-                        <div className="p-4 overflow-y-auto custom-scrollbar flex flex-col gap-2 min-h-[200px]">
-                            {availablePlayers.length === 0 ? (
-                                <div className="flex flex-col items-center justify-center flex-1 py-12 text-gray-500 gap-3">
-                                    <FaUserShield className="w-12 h-12 opacity-20" />
-                                    <p>Nenhum jogador disponível</p>
-                                </div>
-                            ) : (
-                                availablePlayers.map(player => (
-                                    <div key={player.id} className="transform transition-all duration-200 hover:scale-[1.01]">
-                                        <PlayerCard
-                                            name={player.name}
-                                            id={player.id}
-                                            isMatch={true}
-                                            onClick={() => handleAddPlayer(player)}
-                                        />
-                                    </div>
-                                ))
-                            )}
-                        </div>
-                    </div>
-                </div>
+                <PlayerSelectionModal
+                    selectingFor={selectingFor}
+                    players={players}
+                    setSelectingFor={setSelectingFor}
+                    teamA={teamA}
+                    teamB={teamB}
+                    setTeamA={setTeamA}
+                    setTeamB={setTeamB}
+                />
             )}
         </div>
     );

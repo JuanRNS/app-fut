@@ -1,5 +1,5 @@
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
-    variant?: 'primary' | 'outline' | 'ghost' | 'secondary';
+    variant?: 'primary' | 'outline' | 'ghost' | 'secondary' | 'selected';
     isActive?: boolean;
 }
 
