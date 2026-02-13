@@ -99,7 +99,7 @@ export default function GroupPage() {
                 })}
             </div>
 
-            <div className="md:hidden relative z-50">
+            <div className="md:hidden relative">
                 <MobileMenuOpen tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
 
