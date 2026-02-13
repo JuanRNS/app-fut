@@ -2,12 +2,14 @@ import { IMatch, IMatchResponseDetails } from "@/interface/match.interface";
 import { useState } from "react";
 import { FaEllipsisV, FaEye, FaEdit, FaTrash } from "react-icons/fa";
 import { toast } from "sonner";
+import EditStatisticsModal from "./modais/EditStatisticsModal";
 
 export default function MatchDetails({ match, groupId, fetchGroup }: { match: IMatch, groupId: string, fetchGroup: () => void }) {
     const [isExpanded, setIsExpanded] = useState(false);
     const [details, setDetails] = useState<IMatchResponseDetails | null>(null);
     const [loading, setLoading] = useState(false);
     const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+    const [isEditModalOpen, setIsEditModalOpen] = useState(false);
 
     const toggleDetails = async () => {
         const nextState = !isExpanded;
@@ -40,6 +42,8 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
             toast.error("Erro ao deletar partida");
         }
     };
+
+
 
     return (
         <div className="flex flex-col rounded-xl bg-surface border border-border transition-all duration-300 relative">
@@ -78,12 +82,13 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
                                         Visualizar
                                     </button>
                                     <button
-                                        onClick={() => setIsDropdownOpen(false)}
+                                        onClick={() => setIsEditModalOpen(true)}
                                         className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-hover hover:text-foreground transition-colors text-left w-full cursor-pointer"
                                     >
                                         <FaEdit className="text-blue-400" />
                                         Editar
                                     </button>
+                                    <EditStatisticsModal matchId={match.id} groupId={groupId} open={isEditModalOpen} setOpen={setIsEditModalOpen} />
                                     <button
                                         onClick={handleDelete}
                                         className="flex items-center gap-3 px-4 py-3 text-sm text-secondary hover:bg-hover hover:text-foreground transition-colors text-left w-full cursor-pointer"
@@ -97,6 +102,7 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
                     </div>
                 )}
             </div>
+
 
             {/* Painel de Expansão */}
             {isExpanded && (

@@ -11,6 +11,7 @@ export default function Players(props: { groupId: string }) {
     const [players, setPlayers] = useState<IPlayer[]>([]);
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
+    const [playerToEdit, setPlayerToEdit] = useState<IPlayer | undefined>(undefined);
 
     const fetchPlayers = async () => {
         try {
@@ -30,7 +31,7 @@ export default function Players(props: { groupId: string }) {
     }, [groupId]);
 
     const handleDeletePlayer = async (id: string) => {
-        const response = await fetch(`/api/group/${id}/player`, {
+        const response = await fetch(`/api/group/${groupId}/player/${id}`, {
             method: "DELETE",
             headers: {
                 "Content-Type": "application/json",
@@ -53,9 +54,12 @@ export default function Players(props: { groupId: string }) {
     }
 
     return (
-        <div className="flex flex-col gap-6">
+        <div className="flex flex-col gap-6 background-container p-4">
             <div className="flex justify-end">
-                <Button onClick={() => setIsModalOpen(true)} variant="primary" className="flex items-center gap-2">
+                <Button onClick={() => {
+                    setPlayerToEdit(undefined);
+                    setIsModalOpen(true);
+                }} variant="primary" className="flex items-center gap-2">
                     <FaPlus /> Novo Jogador
                 </Button>
             </div>
@@ -63,7 +67,16 @@ export default function Players(props: { groupId: string }) {
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {players?.length > 0 ? (
                     players.map((player) => (
-                        <PlayerCard key={player.id} name={player.name} id={player.id} onDelete={() => handleDeletePlayer(player.id)} />
+                        <PlayerCard
+                            key={player.id}
+                            name={player.name}
+                            id={player.id}
+                            onDelete={() => handleDeletePlayer(player.id)}
+                            onEdit={() => {
+                                setPlayerToEdit(player);
+                                setIsModalOpen(true);
+                            }}
+                        />
                     ))
                 ) : (
                     <p className="text-gray-500 col-span-full text-center py-8">Nenhum jogador cadastrado.</p>
@@ -82,20 +95,28 @@ export default function Players(props: { groupId: string }) {
                         <div className="p-5 border-b border-border flex items-center justify-between bg-surface/50">
                             <h3 className="font-bold text-foreground text-lg flex items-center gap-2">
                                 <FaPlus className="text-primary" />
-                                Adicionar Novo Jogador
+                                {playerToEdit ? "Editar Jogador" : "Adicionar Novo Jogador"}
                             </h3>
                             <button
-                                onClick={() => setIsModalOpen(false)}
+                                onClick={() => {
+                                    setIsModalOpen(false);
+                                    setPlayerToEdit(undefined);
+                                }}
                                 className="w-8 h-8 flex items-center justify-center rounded-full hover:bg-hover text-foreground/60 hover:text-foreground transition-colors"
                             >
                                 <FaTimes />
                             </button>
                         </div>
                         <div className="p-6">
-                            <CreatePlayer id={groupId} onSuccess={() => {
-                                fetchPlayers();
-                                setIsModalOpen(false);
-                            }} />
+                            <CreatePlayer
+                                id={groupId}
+                                playerToEdit={playerToEdit}
+                                onSuccess={() => {
+                                    fetchPlayers();
+                                    setIsModalOpen(false);
+                                    setPlayerToEdit(undefined);
+                                }}
+                            />
                         </div>
                     </div>
                 </div>

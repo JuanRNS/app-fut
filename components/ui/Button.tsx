@@ -10,7 +10,7 @@ export default function Button({ children, variant = 'primary', className = '', 
         selected: "bg-primary text-black font-bold shadow-[0_0_15px_rgba(0,255,157,0.5)] hover:shadow-[0_0_25px_rgba(0,255,157,0.7)]",
         secondary: isActive
             ? "flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap bg-primary text-black font-bold"
-            : "flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap bg-surface/50 text-gray-400 hover:text-white hover:bg-white/10"
+            : "flex items-center gap-2 px-4 py-2 rounded-full whitespace-nowrap bg-surface/50 text-gray-400 hover:text-primary hover:bg-white/10"
     };
 
     return (

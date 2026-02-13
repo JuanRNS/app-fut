@@ -1,14 +1,15 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import Card from '@/components/ui/Card';
 import Input from '@/components/ui/Input';
 import Button from '@/components/ui/Button';
 import DynamicForm from '@/components/ui/DynamicForm';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { useTheme } from '@/components/ThemeProvider';
+import { useTheme } from 'next-themes';
 import { FaMoon, FaSun } from 'react-icons/fa';
+import LoadingSpinner from './ui/LoadingSpinner';
 
 export default function LoginForm() {
     const [email, setEmail] = useState("");
@@ -16,8 +17,13 @@ export default function LoginForm() {
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter();
-    const { theme, toggleTheme } = useTheme();
+    const { theme, setTheme } = useTheme();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleLogin = async (e: React.FormEvent) => {
         setLoading(true);
@@ -47,11 +53,18 @@ export default function LoginForm() {
         }
     };
 
+    if (!mounted) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <LoadingSpinner size={40} />
+            </div>
+        );
+    }
+
     return (
         <Card className="w-full max-w-md relative z-10 backdrop-blur-xl border-border bg-surface/50">
-            {/* Theme Toggle Button */}
             <button
-                onClick={toggleTheme}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="absolute top-4 right-4 p-2 text-gray-400 hover:text-foreground rounded-lg hover:bg-hover transition-colors z-20"
                 title={theme === "dark" ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
             >

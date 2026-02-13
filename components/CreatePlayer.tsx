@@ -1,21 +1,35 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import Button from "./ui/Button";
 import Card from "./ui/Card";
 import DynamicForm from "./ui/DynamicForm";
 import Input from "./ui/Input";
 
-export default function CreatePlayer(props: { id: string, onSuccess?: () => void }) {
-    const { id, onSuccess } = props;
-    const [newPlayerName, setNewPlayerName] = useState("");
+export default function CreatePlayer(props: { id: string, onSuccess?: () => void, playerToEdit?: { id: string, name: string } }) {
+    const { id, onSuccess, playerToEdit } = props;
+    const [newPlayerName, setNewPlayerName] = useState(playerToEdit?.name || "");
     const [loadingPlayer, setLoadingPlayer] = useState(false);
+
+    useEffect(() => {
+        if (playerToEdit) {
+            setNewPlayerName(playerToEdit.name);
+        } else {
+            setNewPlayerName("");
+        }
+    }, [playerToEdit]);
 
     const handleCreatePlayer = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoadingPlayer(true);
         try {
-            const response = await fetch(`/api/group/${id}/player`, {
-                method: "POST",
+            const url = playerToEdit
+                ? `/api/group/${id}/player/${playerToEdit.id}`
+                : `/api/group/${id}/player`;
+
+            const method = playerToEdit ? "PUT" : "POST";
+
+            const response = await fetch(url, {
+                method: method,
                 headers: {
                     "Content-Type": "application/json",
                 },
@@ -23,14 +37,15 @@ export default function CreatePlayer(props: { id: string, onSuccess?: () => void
             });
 
             if (!response.ok) {
-                throw new Error("Erro ao criar jogador");
+                throw new Error(playerToEdit ? "Erro ao editar jogador" : "Erro ao criar jogador");
             }
 
             setNewPlayerName("");
             if (onSuccess) onSuccess();
+            toast.success(playerToEdit ? "Jogador editado com sucesso!" : "Jogador criado com sucesso!");
         } catch (error) {
             console.error(error);
-            throw error;
+            toast.error(playerToEdit ? "Erro ao editar jogador" : "Erro ao criar jogador");
         } finally {
             setLoadingPlayer(false);
         }
@@ -38,7 +53,9 @@ export default function CreatePlayer(props: { id: string, onSuccess?: () => void
     return (
         <div className="max-w-md mx-auto">
             <Card>
-                <h3 className="text-xl font-bold text-white mb-6">Adicionar Jogador</h3>
+                <h3 className="text-xl font-bold text-white mb-6">
+                    {playerToEdit ? "Editar Jogador" : "Adicionar Jogador"}
+                </h3>
                 <DynamicForm
                     onSubmit={(e) => {
                         handleCreatePlayer(e);
@@ -54,7 +71,7 @@ export default function CreatePlayer(props: { id: string, onSuccess?: () => void
                         required
                     />
                     <Button type="submit" variant="primary">
-                        {loadingPlayer ? "Criando..." : "Adicionar Jogador"}
+                        {loadingPlayer ? (playerToEdit ? "Salvando..." : "Criando...") : (playerToEdit ? "Salvar Alterações" : "Adicionar Jogador")}
                     </Button>
                 </DynamicForm>
             </Card>
