@@ -1,8 +1,23 @@
 import { FaMoon, FaSun } from "react-icons/fa";
-import { useTheme } from "./ThemeProvider";
+import { useTheme } from "next-themes";
+import { useEffect, useState } from "react";
+import LoadingSpinner from "./ui/LoadingSpinner";
 
 export default function Header(props: { isOpen: boolean; onOpen: () => void }) {
-    const { theme, toggleTheme } = useTheme();
+    const { theme, setTheme } = useTheme();
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    if (!mounted) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <LoadingSpinner size={40} />
+            </div>
+        );
+    }
 
     return (
         <header className="sticky top-0 z-20 flex items-center justify-between p-4 bg-[var(--header-background)] backdrop-blur-md border-b border-white/5 transition-colors duration-300 text-[var(--header-foreground)]">
@@ -19,7 +34,7 @@ export default function Header(props: { isOpen: boolean; onOpen: () => void }) {
             </div>
 
             <button
-                onClick={toggleTheme}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="p-2 text-gray-400 hover:text-foreground rounded-lg hover:bg-hover transition-colors"
                 title={theme === "dark" ? "Switch to Light Mode" : "Switch to Dark Mode"}
             >

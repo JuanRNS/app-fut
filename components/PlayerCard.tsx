@@ -4,7 +4,6 @@ import { useEffect, useState } from 'react';
 import { FaBars, FaPen, FaTrash } from 'react-icons/fa6';
 import Button from './ui/Button';
 import { PlayerCardProps } from '@/interface/player.interface';
-import { toast } from 'sonner';
 
 export default function PlayerCard({ name, id, onClick, onDelete, onEdit, isMatch, isSelected }: PlayerCardProps) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
@@ -43,7 +42,6 @@ export default function PlayerCard({ name, id, onClick, onDelete, onEdit, isMatc
                         <FaBars className="w-4 h-4" />
                     </Button>
 
-                    {/* Dropdown Menu */}
                     {isMenuOpen && (
                         <>
                             <div
@@ -59,7 +57,6 @@ export default function PlayerCard({ name, id, onClick, onDelete, onEdit, isMatc
                                     className="w-full px-4 py-3 text-left text-sm text-foreground/80 hover:bg-hover hover:text-foreground flex items-center gap-3 transition-colors rounded-none"
                                     onClick={(e) => {
                                         e.stopPropagation();
-                                        toast.info(`Editar jogador ${name}`);
                                         setIsMenuOpen(false);
                                         if (onEdit) onEdit();
                                     }}

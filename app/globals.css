@@ -23,7 +23,6 @@
   --hover: #1E293B;
   --border: rgba(255, 255, 255, 0.1);
   --header-background: #151E32CC;
-  /* Surface with 80% opacity approx for dark mode consistency */
   --header-foreground: #ededed;
 }
 
@@ -46,4 +45,16 @@ body {
   color: var(--foreground);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
   transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+
+.background-container {
+  background-color: transparent;
+  border: none;
+}
+
+:root[data-theme="light"] .background-container {
+  background-color: #FDFDFD !important;
+  border: 1px solid #D1DBE1 !important;
+  border-radius: 12px !important;
 }

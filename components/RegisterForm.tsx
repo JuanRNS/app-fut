@@ -8,8 +8,9 @@ import Button from '@/components/ui/Button';
 import DynamicForm from '@/components/ui/DynamicForm';
 import { toast } from 'sonner';
 import Link from 'next/link';
-import { useTheme } from './ThemeProvider';
+import { useTheme } from 'next-themes';
 import { FaMoon, FaSun } from 'react-icons/fa';
+import LoadingSpinner from './ui/LoadingSpinner';
 
 export default function RegisterForm() {
     const [name, setName] = useState("");
@@ -17,8 +18,13 @@ export default function RegisterForm() {
     const [password, setPassword] = useState("");
     const [loading, setLoading] = useState(false);
     const [success, setSuccess] = useState(false);
+    const [mounted, setMounted] = useState(false);
     const router = useRouter();
-    const { theme, toggleTheme } = useTheme();
+    const { theme, setTheme } = useTheme();
+
+    React.useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const handleRegister = async (e: React.FormEvent) => {
         setLoading(true);
@@ -49,10 +55,18 @@ export default function RegisterForm() {
         }
     };
 
+    if (!mounted) {
+        return (
+            <div className="flex items-center justify-center min-h-[400px]">
+                <LoadingSpinner size={40} />
+            </div>
+        );
+    }
+
     return (
         <Card className="w-full max-w-md relative z-10 backdrop-blur-xl border-white/5">
             <button
-                onClick={toggleTheme}
+                onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="absolute top-4 right-4 p-2 text-gray-400 hover:text-foreground rounded-lg hover:bg-hover transition-colors z-20"
                 title={theme === "dark" ? "Mudar para Modo Claro" : "Mudar para Modo Escuro"}
             >

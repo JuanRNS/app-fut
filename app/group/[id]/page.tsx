@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { FaUsers, FaFutbol, FaTrophy, FaChartBar, FaSpinner, FaPlus, FaChevronDown, FaChevronUp } from "react-icons/fa";
+import { FaSpinner } from "react-icons/fa";
 import { FaArrowLeft } from "react-icons/fa6";
 import Link from "next/link";
-import { IGroupDetails } from "@/interface/group.interface";
 import Button from "@/components/ui/Button";
 import Ranking from "@/components/Ranking";
 import Matches from "@/components/Matches";
@@ -13,6 +12,8 @@ import CreateMatch from "@/components/CreateMatch";
 import Players from "@/components/Players";
 import { toast } from "sonner";
 import Overview from "@/components/Overview";
+import { TABS } from "@/constants/tabs.constants";
+import MobileMenuOpen from "@/components/MobileMenuOpen";
 
 export default function GroupPage() {
     const params = useParams();
@@ -21,14 +22,7 @@ export default function GroupPage() {
     const [group, setGroup] = useState<{ id: string; name: string; description: string } | null>(null);
     const [loading, setLoading] = useState(true);
     const [activeTab, setActiveTab] = useState("overview");
-    const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-    const tabs = [
-        { id: "overview", label: "Visão Geral", icon: FaChartBar },
-        { id: "players", label: "Jogadores", icon: FaUsers },
-        { id: "matches", label: "Partidas", icon: FaFutbol },
-        { id: "ranking", label: "Ranking", icon: FaTrophy },
-        { id: "createMatch", label: "Cria Partida", icon: FaPlus },
-    ];
+    const tabs = TABS;
 
     const fetchGroup = async () => {
         if (!id) return;
@@ -87,7 +81,7 @@ export default function GroupPage() {
                 </div>
             </div>
 
-            <div className="hidden md:flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
+            <div className="hidden md:flex justify-between items-center gap-2 overflow-x-auto pb-2 scrollbar-hide background-container p-4">
                 {tabs.map((tab) => {
                     const Icon = tab.icon;
                     const isActive = activeTab === tab.id;
@@ -106,49 +100,7 @@ export default function GroupPage() {
             </div>
 
             <div className="md:hidden relative z-50">
-                <button
-                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                    className="w-full flex items-center justify-between px-4 py-3 bg-surface border border-border rounded-xl text-foreground font-bold backdrop-blur-md transition-all active:scale-[0.98]"
-                >
-                    <div className="flex items-center gap-2">
-                        {(() => {
-                            const currentTab = tabs.find(t => t.id === activeTab);
-                            const Icon = currentTab?.icon || FaChartBar;
-                            return (
-                                <>
-                                    <Icon className="text-primary" />
-                                    <span>{currentTab?.label}</span>
-                                </>
-                            );
-                        })()}
-                    </div>
-                    {isMobileMenuOpen ? <FaChevronUp className="text-primary" /> : <FaChevronDown className="text-secondary" />}
-                </button>
-
-                {isMobileMenuOpen && (
-                    <div className="absolute top-full left-0 right-0 mt-2 bg-surface border border-border rounded-xl overflow-hidden shadow-2xl animate-in fade-in zoom-in-95 duration-200">
-                        {tabs.map((tab) => {
-                            const Icon = tab.icon;
-                            const isActive = activeTab === tab.id;
-                            return (
-                                <button
-                                    key={tab.id}
-                                    onClick={() => {
-                                        setActiveTab(tab.id);
-                                        setIsMobileMenuOpen(false);
-                                    }}
-                                    className={`w-full flex items-center gap-2 px-4 py-3 transition-colors ${isActive
-                                        ? "bg-primary/20 text-primary border-l-4 border-primary"
-                                        : "text-secondary hover:bg-white/5 hover:text-foreground border-l-4 border-transparent"
-                                        }`}
-                                >
-                                    <Icon className={isActive ? "text-primary" : ""} />
-                                    {tab.label}
-                                </button>
-                            );
-                        })}
-                    </div>
-                )}
+                <MobileMenuOpen tabs={tabs} activeTab={activeTab} setActiveTab={setActiveTab} />
             </div>
 
             <div className="min-h-[300px] animate-in fade-in slide-in-from-bottom-4 duration-500">

@@ -4,6 +4,8 @@ import Button from './ui/Button';
 import Card from './ui/Card';
 import PlayerCard from './PlayerCard';
 import DropdownStatistics from './DropdownStatistics';
+import ScoreBoard from './Scoreboard';
+import MatchControls from './MatchControls';
 import { IMatch, IMatchInterfaceProps, IMatchPlayer, IMatchResponse, IMatchResponseInterface } from '@/interface/match.interface';
 import { IPlayer, IPlayerMatch } from '@/interface/player.interface';
 import { toast } from 'sonner';
@@ -51,11 +53,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
         setIsRunning(false);
     };
 
-    const formatTime = (seconds: number) => {
-        const mins = Math.floor(seconds / 60);
-        const secs = seconds % 60;
-        return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
-    };
+
 
     const handleGetMatch = async (id?: string) => {
         const targetId = id || matchId;
@@ -294,67 +292,21 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                 </div>
             ) : (
                 <Card className="flex flex-col items-center gap-6 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
-                    <div className="flex items-center justify-center gap-4 md:gap-12 w-full px-2">
-                        {/* Home Score */}
-                        <div className="flex flex-col items-center">
-                            <span className="text-secondary text-xs md:text-sm uppercase tracking-wider mb-2">Time A</span>
-                            <div className="text-4xl md:text-6xl font-bold text-foreground bg-surface/50 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center decoration-0">
-                                {homeScore}
-                            </div>
-                            <div className="flex gap-2 mt-2">
-                                <Button className="w-8 h-8 md:w-auto md:h-auto flex items-center justify-center" variant="secondary" onClick={() => setHomeScore(s => Math.max(0, s - 1))}>-</Button>
-                                <Button className="w-8 h-8 md:w-auto md:h-auto flex items-center justify-center" variant="primary" onClick={() => setHomeScore(s => s + 1)}>+</Button>
-                            </div>
-                        </div>
+                    <ScoreBoard
+                        homeScore={homeScore}
+                        awayScore={awayScore}
+                        time={time}
+                        isRunning={isRunning}
+                        setHomeScore={setHomeScore}
+                        setAwayScore={setAwayScore}
+                    />
 
-                        {/* Timer */}
-                        <div className="flex flex-col items-center gap-2">
-                            <div className="text-3xl md:text-4xl font-mono text-primary font-bold tracking-widest flex items-center gap-2">
-                                <FaClock className="w-5 h-5 md:w-6 md:h-6" />
-                                {formatTime(time)}
-                            </div>
-                            <span className="text-[10px] md:text-xs text-green-500 uppercase tracking-widest font-bold whitespace-nowrap">
-                                {isRunning ? 'Em Andamento' : 'Pausado'}
-                            </span>
-                        </div>
-
-                        {/* Away Score */}
-                        <div className="flex flex-col items-center">
-                            <span className="text-secondary text-xs md:text-sm uppercase tracking-wider mb-2">Time B</span>
-                            <div className="text-4xl md:text-6xl font-bold text-foreground bg-surface/50 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center">
-                                {awayScore}
-                            </div>
-                            <div className="flex gap-2 mt-2">
-                                <Button className="w-8 h-8 md:w-auto md:h-auto flex items-center justify-center" variant="secondary" onClick={() => setAwayScore(s => Math.max(0, s - 1))}>-</Button>
-                                <Button className="w-8 h-8 md:w-auto md:h-auto flex items-center justify-center" variant="primary" onClick={() => setAwayScore(s => s + 1)}>+</Button>
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Match Controls */}
-                    <div className="w-full flex flex-col md:flex-row items-center justify-center gap-3 md:gap-4 mt-4 px-4">
-                        <Button
-                            variant={isRunning ? "secondary" : "primary"}
-                            onClick={() => setIsRunning(!isRunning)}
-                            className="w-full md:w-40 flex items-center justify-center gap-2"
-                        >
-                            {isRunning ? <><FaPause /> Pausar</> : <><FaPlay /> Continuar</>}
-                        </Button>
-                        <Button
-                            variant="ghost"
-                            onClick={onFinish}
-                            className="w-full md:w-40 flex items-center gap-2 justify-center text-red-500 hover:bg-red-500/10 hover:text-red-400 border border-red-500/20"
-                        >
-                            <FaStop /> Finalizar
-                        </Button>
-                        <Button
-                            variant="secondary"
-                            onClick={() => resetTimer()}
-                            className="w-full md:w-40 flex items-center gap-2 justify-center text-foreground hover:bg-hover hover:text-foreground"
-                        >
-                            <FaStop /> Zerar
-                        </Button>
-                    </div>
+                    <MatchControls
+                        isRunning={isRunning}
+                        setIsRunning={setIsRunning}
+                        onFinish={onFinish}
+                        onReset={resetTimer}
+                    />
                 </Card>
             )}
 
