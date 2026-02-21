@@ -89,4 +89,5 @@ enum Team {
 enum MatchStatisticsType {
   GOAL
   ASSISTANCE
+  OWN_GOAL
 }

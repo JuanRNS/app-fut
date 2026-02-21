@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { FaFutbol, FaHandsHelping, FaSpinner } from 'react-icons/fa';
 import { toast } from 'sonner';
 import { IDropdownStatisticsProps, IRequestMatchStatistics } from '@/interface/modal-statistics.interface'; // Typo in original filename preserved to avoid confusion
+import { MatchStatisticsType } from '@/generated/prisma/enums';
 
 export default function DropdownStatistics({ onClose, playerId, matchId, groupId, team }: IDropdownStatisticsProps) {
     const [isLoading, setIsLoading] = useState(false);
@@ -19,7 +20,7 @@ export default function DropdownStatistics({ onClose, playerId, matchId, groupId
         };
     }, [onClose]);
 
-    const handleStat = async (type: 'GOAL' | 'ASSISTANCE') => {
+    const handleStat = async (type: MatchStatisticsType) => {
         if (!matchId) {
             toast.error("Partida não identificada");
             return;
@@ -46,7 +47,7 @@ export default function DropdownStatistics({ onClose, playerId, matchId, groupId
                 throw new Error("Erro ao registrar estatística");
             }
 
-            toast.success(type === 'GOAL' ? "Gol registrado!" : "Assistência registrada!");
+            toast.success(type === 'GOAL' ? "Gol registrado!" : type === 'ASSISTANCE' ? "Assistência registrada!" : "Gol Contra registrado!");
             onClose(type, team);
         } catch (error) {
             toast.error("Erro ao registrar estatística");
@@ -77,6 +78,15 @@ export default function DropdownStatistics({ onClose, playerId, matchId, groupId
                 >
                     {isLoading ? <FaSpinner className="animate-spin text-blue-400" /> : <FaHandsHelping className="text-blue-400" />}
                     <span>Assistência</span>
+                </button>
+                <div className="h-px bg-white/5 mx-2" />
+                <button
+                    onClick={() => handleStat('OWN_GOAL')}
+                    disabled={isLoading}
+                    className="flex items-center gap-3 px-4 py-3 text-sm text-white hover:bg-white/10 rounded-lg transition-colors w-full text-left disabled:opacity-50"
+                >
+                    {isLoading ? <FaSpinner className="animate-spin text-red-500" /> : <FaFutbol className="text-red-500" />}
+                    <span>Gol Contra</span>
                 </button>
             </div>
         </div>

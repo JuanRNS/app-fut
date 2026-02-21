@@ -135,7 +135,14 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
                                                     <span className={`w-2 h-2 rounded-full ${player.team === 'HOME' ? 'bg-blue-400' : 'bg-red-400'}`} />
                                                     <span className="text-foreground">{player.name}</span>
                                                 </div>
-                                                <span className="text-foreground font-bold">{player.goals} {player.goals === 1 ? 'gol' : 'gols'}</span>
+                                                <div className="flex flex-col items-end">
+                                                    {player.goals > 0 && (
+                                                        <span className="text-foreground font-bold">{player.goals} {player.goals === 1 ? 'gol' : 'gols'}</span>
+                                                    )}
+                                                    {player.ownGoals && player.ownGoals > 0 ? (
+                                                        <span className="text-red-500 font-bold text-[11px] uppercase tracking-wider">{player.ownGoals} {player.ownGoals === 1 ? 'contra' : 'contra'}</span>
+                                                    ) : null}
+                                                </div>
                                             </div>
                                         ))}
                                     </div>

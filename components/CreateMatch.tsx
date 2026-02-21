@@ -46,7 +46,7 @@ export default function CreateMatch(props: { groupId: string }) {
     }
 
     return (
-        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 background-container p-4">
+        <div className="animate-in fade-in slide-in-from-bottom-4 duration-500 background-container">
             {!isMatchActive ? (
                 <div className="flex flex-col items-center justify-center py-12 text-center">
                     <FaFutbol className="w-16 h-16 text-primary mb-4 opacity-80" />

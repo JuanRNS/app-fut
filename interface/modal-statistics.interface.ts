@@ -26,14 +26,14 @@ export interface IResponseMatchStatistics {
 }
 
 export interface IDropdownStatisticsProps {
-    onClose: (type?: 'GOAL' | 'ASSISTANCE', team?: Team) => void;
+    onClose: (type?: MatchStatisticsType, team?: Team) => void;
     playerId: string;
     matchId: string | null;
     groupId: string;
     team: Team;
 }
 
-type MatchStatisticsType = 'GOAL' | 'ASSISTANCE';
+type MatchStatisticsType = 'GOAL' | 'ASSISTANCE' | 'OWN_GOAL';
 
 type Team = 'HOME' | 'AWAY';
 

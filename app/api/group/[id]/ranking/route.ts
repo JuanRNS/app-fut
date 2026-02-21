@@ -8,7 +8,20 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         const { searchParams } = new URL(request.url);
         const page = Number(searchParams.get('page')) || 1;
         const limit = Number(searchParams.get('limit')) || 10;
+        const filter = searchParams.get('filter') || 'all';
         const { id } = await params;
+
+        let dateFilter = undefined;
+        if (filter === 'daily') {
+            const today = new Date();
+            today.setHours(0, 0, 0, 0);
+            dateFilter = { gte: today };
+        } else if (filter === 'monthly') {
+            const firstDayOfMonth = new Date();
+            firstDayOfMonth.setDate(1);
+            firstDayOfMonth.setHours(0, 0, 0, 0);
+            dateFilter = { gte: firstDayOfMonth };
+        }
 
         const players = await prisma.player.findMany({
             where: {
@@ -22,6 +35,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
                         statistics: {
                             where: {
                                 type: "GOAL",
+                                ...(dateFilter ? { createdAt: dateFilter } : {})
                             },
                         },
                     },

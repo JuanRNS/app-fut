@@ -52,7 +52,7 @@ export default function CreatePlayer(props: { id: string, onSuccess?: () => void
     }
     return (
         <div className="max-w-md mx-auto">
-            <Card>
+            <Card className="p-6">
                 <h3 className="text-xl font-bold text-white mb-6">
                     {playerToEdit ? "Editar Jogador" : "Adicionar Jogador"}
                 </h3>

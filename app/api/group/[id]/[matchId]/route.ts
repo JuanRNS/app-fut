@@ -26,6 +26,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ matc
         const playersIds: {
             playerId: string,
             goals: number,
+            ownGoals: number,
             team: Team
         }[] = [];
         (await match).statistics.forEach(statistic => {
@@ -34,7 +35,14 @@ export async function GET(request: Request, { params }: { params: Promise<{ matc
                 if (player) {
                     player.goals++
                 } else {
-                    playersIds.push({ playerId: statistic.playerId, goals: 1, team: statistic.team })
+                    playersIds.push({ playerId: statistic.playerId, goals: 1, ownGoals: 0, team: statistic.team })
+                }
+            } else if (statistic.type === 'OWN_GOAL') {
+                const player = playersIds.find(player => player.playerId === statistic.playerId)
+                if (player) {
+                    player.ownGoals++
+                } else {
+                    playersIds.push({ playerId: statistic.playerId, goals: 0, ownGoals: 1, team: statistic.team })
                 }
             }
         })
@@ -48,16 +56,24 @@ export async function GET(request: Request, { params }: { params: Promise<{ matc
         })
 
         const playerResponse = players.map(player => {
-            const playerGoals = playersIds.find(playerIds => playerIds.playerId === player.id)
+            const playerStats = playersIds.find(playerIds => playerIds.playerId === player.id)
             return {
                 ...player,
-                goals: playerGoals?.goals || 0,
-                team: playerGoals?.team || ''
+                goals: playerStats?.goals || 0,
+                ownGoals: playerStats?.ownGoals || 0,
+                team: playerStats?.team || ''
             }
-        })
+        }).filter(p => p.goals > 0 || p.ownGoals > 0);
 
-        const teamHomeGoals = (await match).statistics.filter(statistic => statistic.team === 'HOME').length;
-        const teamAwayGoals = (await match).statistics.filter(statistic => statistic.team === 'AWAY').length;
+        const teamHomeGoals = (await match).statistics.filter(statistic =>
+            (statistic.team === 'HOME' && statistic.type === 'GOAL') ||
+            (statistic.team === 'AWAY' && statistic.type === 'OWN_GOAL')
+        ).length;
+
+        const teamAwayGoals = (await match).statistics.filter(statistic =>
+            (statistic.team === 'AWAY' && statistic.type === 'GOAL') ||
+            (statistic.team === 'HOME' && statistic.type === 'OWN_GOAL')
+        ).length;
 
         const response = {
             match,
@@ -71,8 +87,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ matc
         return NextResponse.json({ message: "Erro ao buscar partida" }, { status: 500 })
     }
 }
-
-
 
 export async function DELETE(request: Request, { params }: { params: Promise<{ id: string, matchId: string }> }) {
     const { id, matchId } = await params;
