@@ -39,4 +39,5 @@ export interface IResponseRanking {
 export interface IResponsePlayerMatch extends IPlayer {
     goals: number;
     team: string;
+    ownGoals?: number;
 }

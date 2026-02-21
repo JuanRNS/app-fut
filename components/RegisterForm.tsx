@@ -64,7 +64,7 @@ export default function RegisterForm() {
     }
 
     return (
-        <Card className="w-full max-w-md relative z-10 backdrop-blur-xl border-white/5">
+        <Card className="w-full p-6 max-w-md relative z-10 backdrop-blur-xl border-white/5">
             <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="absolute top-4 right-4 p-2 text-gray-400 hover:text-foreground rounded-lg hover:bg-hover transition-colors z-20"

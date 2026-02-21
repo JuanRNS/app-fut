@@ -9,7 +9,7 @@ import MatchControls from './MatchControls';
 import { IMatch, IMatchInterfaceProps, IMatchPlayer, IMatchResponse, IMatchResponseInterface } from '@/interface/match.interface';
 import { IPlayer, IPlayerMatch } from '@/interface/player.interface';
 import { toast } from 'sonner';
-import { Team } from '@/generated/prisma/enums';
+import { MatchStatisticsType, Team } from '@/generated/prisma/enums';
 import PlayerSelectionModal from './modais/PlayerSelectionModal';
 
 export default function MatchInterface({ players, onFinish, groupId }: IMatchInterfaceProps) {
@@ -91,12 +91,18 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
         }
     };
 
-    const handleStatistics = (type?: 'GOAL' | 'ASSISTANCE', team?: Team) => {
+    const handleStatistics = (type?: MatchStatisticsType, team?: Team) => {
         if (type === 'GOAL' && team) {
             if (team === 'HOME') {
                 setHomeScore((prev) => prev + 1);
             } else if (team === 'AWAY') {
                 setAwayScore((prev) => prev + 1);
+            }
+        } else if (type === 'OWN_GOAL' && team) {
+            if (team === 'HOME') {
+                setAwayScore((prev) => prev + 1);
+            } else if (team === 'AWAY') {
+                setHomeScore((prev) => prev + 1);
             }
         }
         setOpenDropdownPlayerId(null);
@@ -175,14 +181,14 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                         isMatch={true}
                     />
                     {isGK && (
-                        <div className="absolute -top-2 -left-2 bg-yellow-500 text-black p-1.5 rounded-full shadow-lg z-10" title="Goleiro">
+                        <div className="absolute -top-2 -left-2 bg-yellow-500 text-black p-1.5 rounded-full shadow-lg" title="Goleiro">
                             <FaUserShield size={14} />
                         </div>
                     )}
                     {!hasStarted && (
                         <button
                             onClick={() => handleRemovePlayer(team, player.id)}
-                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
+                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
                         >
                             <FaTimes size={12} />
                         </button>
@@ -194,7 +200,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                                     e.stopPropagation();
                                     toggleDropdown(player.id);
                                 }}
-                                className={`absolute bottom-6 -right-2 p-1.5 rounded-full shadow-lg z-10 cursor-pointer transition-colors ${openDropdownPlayerId === player.id
+                                className={`absolute bottom-6 -right-2 p-1.5 rounded-full shadow-lg cursor-pointer transition-colors ${openDropdownPlayerId === player.id
                                     ? 'bg-white text-black hover:bg-gray-200'
                                     : 'bg-green-500 text-black hover:bg-green-600'
                                     }`}
@@ -243,9 +249,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
 
     return (
         <div className="flex flex-col gap-6 relative">
-            {/* Players Team Selection */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                {/* Team A Data */}
                 <div className="bg-surface rounded-xl p-6 border border-border flex flex-col gap-4">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
@@ -261,7 +265,6 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                     </div>
                 </div>
 
-                {/* Team B Data */}
                 <div className="bg-surface rounded-xl p-6 border border-border flex flex-col gap-4">
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">

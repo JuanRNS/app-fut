@@ -7,13 +7,14 @@ export default function Ranking(props: { id: string }) {
     const [players, setPlayers] = useState<IResponsePlayerRanking[]>([]);
     const [pagination, setPagination] = useState<IPagination>();
     const [currentPage, setCurrentPage] = useState(1);
+    const [filter, setFilter] = useState('all');
 
     useEffect(() => {
         getRanking();
-    }, [currentPage]);
+    }, [currentPage, filter]);
 
     async function getRanking() {
-        const response = await fetch(`/api/group/${props.id}/ranking?page=${currentPage}&limit=5`);
+        const response = await fetch(`/api/group/${props.id}/ranking?page=${currentPage}&limit=5&filter=${filter}`);
         const data: IResponseRanking = await response.json();
         setPlayers(data.players);
         setPagination(data.pagination);
@@ -25,6 +26,20 @@ export default function Ranking(props: { id: string }) {
 
     return (
         <div className="space-y-4">
+            <div className="flex justify-end">
+                <select
+                    value={filter}
+                    onChange={(e) => {
+                        setFilter(e.target.value);
+                        setCurrentPage(1);
+                    }}
+                    className="bg-surface text-foreground border border-white/10 rounded-lg px-3 py-2 text-sm outline-none cursor-pointer focus:border-white/30 transition-colors"
+                >
+                    <option value="all">Ranking Geral</option>
+                    <option value="daily">Ranking do Dia</option>
+                    <option value="monthly">Ranking Mensal</option>
+                </select>
+            </div>
             <div className="rounded-xl bg-surface border border-white/10 overflow-hidden shadow-sm">
                 <table className="w-full text-center">
                     <thead className="bg-hover/50 text-foreground/70 text-sm uppercase">
