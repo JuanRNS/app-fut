@@ -18,23 +18,23 @@ export default function Pagination(props: PaginationProps) {
 
     const generatePageNumbers = () => {
         const pages: (number | string)[] = [];
-        const maxVisiblePages = 4;
+        const maxVisiblePages = 3;
 
         if (totalPages <= maxVisiblePages) {
             for (let i = 1; i <= totalPages; i++) {
                 pages.push(i);
             }
         } else {
-            if (currentPage <= 3) {
-                for (let i = 1; i <= 3; i++) {
+            if (currentPage <= 2) {
+                for (let i = 1; i <= 2; i++) {
                     pages.push(i);
                 }
                 pages.push("...");
                 pages.push(totalPages);
-            } else if (currentPage >= totalPages - 2) {
+            } else if (currentPage >= totalPages - 1) {
                 pages.push(1);
                 pages.push("...");
-                for (let i = totalPages - 2; i <= totalPages; i++) {
+                for (let i = totalPages - 1; i <= totalPages; i++) {
                     pages.push(i);
                 }
             } else {
@@ -49,14 +49,14 @@ export default function Pagination(props: PaginationProps) {
     };
 
     return (
-        <div className="flex items-center justify-center gap-2">
+        <div className="flex items-center justify-center gap-1 sm:gap-2">
             <Button
                 variant="secondary"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={currentPage === 1 ? "opacity-50 cursor-not-allowed hover:bg-surface/50 hover:text-gray-400" : ""}
+                className={`!px-2 !py-1.5 sm:!px-4 sm:!py-2 ${currentPage === 1 ? "opacity-50 cursor-not-allowed hover:bg-surface/50 hover:text-gray-400" : ""}`}
             >
-                <FaChevronLeft className="w-3 h-3" />
+                <FaChevronLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             </Button>
 
             {generatePageNumbers().map((page, index) => (
@@ -66,12 +66,12 @@ export default function Pagination(props: PaginationProps) {
                         variant="secondary"
                         isActive={currentPage === page}
                         onClick={() => handlePageChange(page)}
-                        className={`w-10 h-10 flex items-center justify-center p-0 ${currentPage === page ? "bg-primary text-black" : ""}`}
+                        className={`!w-8 !h-8 sm:!w-10 sm:!h-10 flex items-center justify-center !p-0 text-sm sm:text-base ${currentPage === page ? "bg-primary text-black" : ""}`}
                     >
                         {page}
                     </Button>
                 ) : (
-                    <span key={index} className="text-gray-400 px-2">...</span>
+                    <span key={index} className="text-gray-400 px-1 sm:px-2 text-sm">...</span>
                 )
             ))}
 
@@ -79,9 +79,9 @@ export default function Pagination(props: PaginationProps) {
                 variant="secondary"
                 onClick={() => handlePageChange(currentPage + 1)}
                 disabled={currentPage === totalPages}
-                className={currentPage === totalPages ? "opacity-50 cursor-not-allowed hover:bg-surface/50 hover:text-gray-400" : ""}
+                className={`!px-2 !py-1.5 sm:!px-4 sm:!py-2 ${currentPage === totalPages ? "opacity-50 cursor-not-allowed hover:bg-surface/50 hover:text-gray-400" : ""}`}
             >
-                <FaChevronRight className="w-3 h-3" />
+                <FaChevronRight className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             </Button>
         </div>
     );
