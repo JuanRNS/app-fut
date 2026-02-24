@@ -47,9 +47,9 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
 
     return (
         <div className="flex flex-col rounded-xl bg-surface border border-border transition-all duration-300 relative">
-            <div className="p-4 flex justify-between items-center hover:bg-hover transition-colors">
-                <span className="text-secondary text-sm font-bold">{new Date(match.createdAt).toLocaleDateString()}</span>
-                <span className="text-foreground font-bold">Partida</span>
+            <div className="p-4 flex gap-2 justify-between items-center hover:bg-hover transition-colors">
+                <span className="text-secondary text-sm font-bold truncate">{new Date(match.createdAt).toLocaleDateString("pt-BR")}</span>
+                <span className="text-foreground font-bold truncate">Partida</span>
 
                 {isExpanded ? (
                     <button
@@ -103,16 +103,13 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
                 )}
             </div>
 
-
-            {/* Painel de Expansão */}
             {isExpanded && (
                 <div className="bg-surface/50 p-4 border-t border-border space-y-4 animate-in slide-in-from-top-2 duration-200">
                     {loading ? (
                         <p className="text-center text-secondary text-sm italic">Carregando detalhes...</p>
                     ) : details ? (
                         <>
-                            {/* Placar */}
-                            <div className="flex justify-center items-center gap-8 text-2xl font-bold text-foreground">
+                            <div className="flex justify-center items-center gap-4 sm:gap-8 text-2xl font-bold text-foreground">
                                 <div className="flex flex-col items-center gap-1">
                                     <span className="text-sm font-normal text-secondary">Time A</span>
                                     <span className="text-blue-400">{details.goalsHome}</span>
@@ -124,18 +121,17 @@ export default function MatchDetails({ match, groupId, fetchGroup }: { match: IM
                                 </div>
                             </div>
 
-                            {/* Lista de Goleadores */}
                             {details.players && details.players.length > 0 ? (
                                 <div className="space-y-2">
                                     <h4 className="text-sm font-medium text-secondary border-b border-border pb-1">Gols</h4>
                                     <div className="grid grid-cols-1 gap-2">
                                         {details.players.map((player) => (
-                                            <div key={player.id} className="flex justify-between items-center text-sm">
-                                                <div className="flex items-center gap-2">
-                                                    <span className={`w-2 h-2 rounded-full ${player.team === 'HOME' ? 'bg-blue-400' : 'bg-red-400'}`} />
-                                                    <span className="text-foreground">{player.name}</span>
+                                            <div key={player.id} className="flex justify-between items-center text-sm gap-2">
+                                                <div className="flex items-center gap-2 min-w-0">
+                                                    <span className={`w-2 h-2 rounded-full flex-shrink-0 ${player.team === 'HOME' ? 'bg-blue-400' : 'bg-red-400'}`} />
+                                                    <span className="text-foreground truncate">{player.name}</span>
                                                 </div>
-                                                <div className="flex flex-col items-end">
+                                                <div className="flex flex-col items-end flex-shrink-0">
                                                     {player.goals > 0 && (
                                                         <span className="text-foreground font-bold">{player.goals} {player.goals === 1 ? 'gol' : 'gols'}</span>
                                                     )}
