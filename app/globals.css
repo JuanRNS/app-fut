@@ -26,7 +26,7 @@
   --header-foreground: #ededed;
 }
 
-:root[data-theme="light"] {
+:root[class="light"] {
   --background: #E9EFF2;
   --surface: #FDFDFD;
   --foreground: #2A3942;
@@ -53,7 +53,7 @@ body {
   border: none;
 }
 
-:root[data-theme="light"] .background-container {
+:root[class="light"] .background-container {
   background-color: #FDFDFD !important;
   border: 1px solid #D1DBE1 !important;
   border-radius: 12px !important;

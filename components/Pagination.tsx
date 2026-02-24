@@ -54,7 +54,7 @@ export default function Pagination(props: PaginationProps) {
                 variant="secondary"
                 onClick={() => handlePageChange(currentPage - 1)}
                 disabled={currentPage === 1}
-                className={`!px-2 !py-1.5 sm:!px-4 sm:!py-2 ${currentPage === 1 ? "opacity-50 cursor-not-allowed hover:bg-surface/50 hover:text-gray-400" : ""}`}
+                className={`px-2 py-1.5 sm:px-4 sm:py-2 ${currentPage === 1 ? "opacity-50 cursor-not-allowed hover:bg-surface/50 hover:text-gray-400" : ""}`}
             >
                 <FaChevronLeft className="w-2.5 h-2.5 sm:w-3 sm:h-3" />
             </Button>
@@ -66,7 +66,7 @@ export default function Pagination(props: PaginationProps) {
                         variant="secondary"
                         isActive={currentPage === page}
                         onClick={() => handlePageChange(page)}
-                        className={`!w-8 !h-8 sm:!w-10 sm:!h-10 flex items-center justify-center !p-0 text-sm sm:text-base ${currentPage === page ? "bg-primary text-black" : ""}`}
+                        className={`w-8 h-8 sm:w-10 sm:h-10 flex items-center justify-center p-0 text-sm sm:text-base ${currentPage === page ? "bg-primary text-black" : ""}`}
                     >
                         {page}
                     </Button>
