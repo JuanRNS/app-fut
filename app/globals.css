@@ -14,29 +14,29 @@
 }
 
 :root {
-  --background: #0B1121;
-  --surface: #151E32;
-  --foreground: #ededed;
-  --primary: #00F0FF;
-  --secondary: #00FF9D;
-  --accent: #FF0055;
-  --hover: #1E293B;
-  --border: rgba(255, 255, 255, 0.1);
-  --header-background: #151E32CC;
-  --header-foreground: #ededed;
+  --background: #0F172A;
+  --surface: #1E293B;
+  --foreground: #F8FAFC;
+  --primary: #2563EB;
+  --secondary: #64748B;
+  --accent: #F59E0B;
+  --hover: #334155;
+  --border: rgba(255, 255, 255, 0.05);
+  --header-background: rgba(15, 23, 42, 0.8);
+  --header-foreground: #F8FAFC;
 }
 
 :root[class="light"] {
-  --background: #E9EFF2;
-  --surface: #FDFDFD;
-  --foreground: #2A3942;
-  --primary: #00D1FF;
+  --background: #F1F5F9;
+  --surface: #FFFFFF;
+  --foreground: #0F172A;
+  --primary: #1D4ED8;
   --primary-foreground: #FFFFFF;
-  --secondary: #5C6E79;
-  --accent: #E11D48;
-  --hover: #F1F5F9;
-  --border: #D1DBE1;
-  --header-background: #2D4A4F;
+  --secondary: #94A3B8;
+  --accent: #D97706;
+  --hover: #E2E8F0;
+  --border: #E2E8F0;
+  --header-background: #1D4ED8;
   --header-foreground: #FFFFFF;
 }
 
