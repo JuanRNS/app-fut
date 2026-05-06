@@ -64,7 +64,7 @@ export default function RegisterForm() {
     }
 
     return (
-        <Card className="w-full p-6 max-w-md relative z-10 backdrop-blur-xl border-white/5">
+        <Card className="w-full p-6 max-w-md relative z-10 backdrop-blur-xl border-border">
             <button
                 onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
                 className="absolute top-4 right-4 p-2 text-gray-400 hover:text-foreground rounded-lg hover:bg-hover transition-colors z-20"
@@ -77,7 +77,7 @@ export default function RegisterForm() {
                 )}
             </button>
             <div className="flex flex-col items-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-tr from-primary to-secondary rounded-full flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(0,240,255,0.4)]">
+                <div className="w-20 h-20 bg-gradient-to-tr from-primary to-secondary rounded-full flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
                     <span className="text-3xl">📝</span>
                 </div>
                 <h1 className="text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-white to-gray-400">

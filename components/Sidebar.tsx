@@ -20,7 +20,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
             />
 
             <aside
-                className={`fixed left-0 top-0 z-40 h-screen w-64 transition-transform duration-300 bg-[var(--header-background)] border-r border-white/5 ${isOpen ? "translate-x-0" : "-translate-x-full"
+                className={`fixed left-0 top-0 z-40 h-screen w-64 transition-transform duration-300 bg-[var(--header-background)] border-r border-border ${isOpen ? "translate-x-0" : "-translate-x-full"
                     }`}
             >
                 <div className="flex h-full flex-col overflow-y-auto px-3 py-4">
@@ -44,7 +44,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 href="/home"
                                 onClick={onClose}
                                 className={`group flex items-center rounded-lg p-2 transition-all duration-200 ${isActive("/home")
-                                    ? "bg-primary/10 text-primary shadow-[0_0_10px_rgba(0,240,255,0.2)] border border-primary/20"
+                                    ? "bg-primary/10 text-primary shadow-md shadow-primary/10 border border-primary/20"
                                     : "text-[var(--header-foreground)]/60 hover:bg-white/10 hover:text-[var(--header-foreground)]"
                                     }`}
                             >
@@ -57,7 +57,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                                 onClick={logout}
                                 href="/login"
                                 className={`group flex items-center rounded-lg p-2 transition-all duration-200 ${isActive("/login")
-                                    ? "bg-primary/10 text-primary shadow-[0_0_10px_rgba(0,240,255,0.2)] border border-primary/20"
+                                    ? "bg-primary/10 text-primary shadow-md shadow-primary/10 border border-primary/20"
                                     : "text-[var(--header-foreground)]/60 hover:bg-white/10 hover:text-[var(--header-foreground)]"
                                     }`}
                             >

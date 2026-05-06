@@ -20,7 +20,7 @@ export default function Header(props: { isOpen: boolean; onOpen: () => void }) {
     }
 
     return (
-        <header className="sticky top-0 z-20 flex items-center justify-between p-4 bg-[var(--header-background)] backdrop-blur-md border-b border-white/5 transition-colors duration-300 text-[var(--header-foreground)]">
+        <header className="sticky top-0 z-20 flex items-center justify-between p-4 bg-[var(--header-background)] backdrop-blur-md border-b border-border transition-colors duration-300 text-[var(--header-foreground)]">
             <div className="flex items-center gap-4">
                 <button
                     onClick={() => props.onOpen()}
@@ -30,7 +30,7 @@ export default function Header(props: { isOpen: boolean; onOpen: () => void }) {
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
                     </svg>
                 </button>
-                <span className="text-lg font-bold text-white tracking-tighter">FUT APP</span>
+                <span className="text-lg font-bold text-foreground tracking-tighter">FUT APP</span>
             </div>
 
             <button
