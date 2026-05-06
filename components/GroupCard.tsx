@@ -16,17 +16,12 @@ export default function GroupCard({ group }: IGroupCardProps) {
     };
 
     return (
-        <div className="relative w-full max-w-md cursor-pointer" onClick={handleClick}> {/* Increased max-w-sm to max-w-md */}
-            <div className="relative rounded-2xl bg-surface/50 border border-border backdrop-blur-md transition-all duration-300 hover:-translate-y-1 hover:border-primary/50 hover:shadow-[0_0_30px_rgba(0,240,255,0.15)] flex flex-col gap-4 h-full min-h-[200px]">
-
-                {/* Background Elements Container - Handles Overflow for decorations */}
-                <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-                    <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-primary/5 rounded-full blur-[50px]" />
-                </div>
-
-                <div className="relative z-10 p-6 flex flex-col gap-4 h-full">
+        <div className="relative w-full max-w-md cursor-pointer group" onClick={handleClick}>
+            <div className="relative rounded-xl bg-surface border border-border transition-all duration-200 hover:border-primary/50 hover:shadow-lg flex flex-col gap-4 h-full min-h-[180px] overflow-hidden">
+                
+                <div className="relative z-10 p-6 flex flex-col gap-3 h-full">
                     <div className="flex justify-between items-start gap-4">
-                        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-300 break-words flex-1">
+                        <h3 className="text-xl font-bold text-foreground group-hover:text-primary transition-colors duration-200 break-words flex-1">
                             {group.name}
                         </h3>
 
@@ -37,7 +32,7 @@ export default function GroupCard({ group }: IGroupCardProps) {
                                     setIsMenuOpen(!isMenuOpen);
                                 }}
                                 variant="ghost"
-                                className="p-2 text-foreground/60 hover:text-foreground transition-colors rounded-full hover:bg-hover"
+                                className="p-2 text-secondary hover:text-foreground transition-colors rounded-lg"
                             >
                                 <FaBars className="w-5 h-5" />
                             </Button>
@@ -52,10 +47,9 @@ export default function GroupCard({ group }: IGroupCardProps) {
                                             setIsMenuOpen(false);
                                         }}
                                     />
-                                    <div className="absolute right-0 top-full mt-2 w-36 bg-surface border border-border rounded-lg shadow-xl z-50 overflow-hidden">
-                                        <Button
-                                            variant="ghost"
-                                            className="w-full px-4 py-3 text-left text-sm text-foreground/80 hover:bg-hover hover:text-foreground flex items-center gap-3 transition-colors rounded-none"
+                                    <div className="absolute right-0 top-full mt-2 w-40 bg-surface border border-border rounded-lg shadow-xl z-50 overflow-hidden">
+                                        <button
+                                            className="w-full px-4 py-3 text-left text-sm text-foreground/80 hover:bg-hover hover:text-foreground flex items-center gap-3 transition-colors"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 toast.info(`Editar grupo ${group.name}`);
@@ -63,10 +57,9 @@ export default function GroupCard({ group }: IGroupCardProps) {
                                             }}
                                         >
                                             <FaPen className="w-3 h-3" /> Editar
-                                        </Button>
-                                        <Button
-                                            variant="ghost"
-                                            className="w-full px-4 py-3 text-left text-sm text-red-500 hover:bg-red-500/10 hover:text-red-600 flex items-center gap-3 transition-colors rounded-none"
+                                        </button>
+                                        <button
+                                            className="w-full px-4 py-3 text-left text-sm text-red-500 hover:bg-red-500/10 hover:text-red-600 flex items-center gap-3 transition-colors"
                                             onClick={(e) => {
                                                 e.stopPropagation();
                                                 toast.info(`Excluir grupo ${group.name}`);
@@ -74,7 +67,7 @@ export default function GroupCard({ group }: IGroupCardProps) {
                                             }}
                                         >
                                             <FaTrash className="w-3 h-3" /> Excluir
-                                        </Button>
+                                        </button>
                                     </div>
                                 </>
                             )}
@@ -82,10 +75,13 @@ export default function GroupCard({ group }: IGroupCardProps) {
                     </div>
 
                     {/* Description */}
-                    <p className="text-foreground/60 text-sm line-clamp-3">
-                        {group.description}
+                    <p className="text-secondary text-sm line-clamp-2 leading-relaxed">
+                        {group.description || "Sem descrição disponível."}
                     </p>
                 </div>
+                
+                {/* Visual Accent */}
+                <div className="h-1 w-full bg-gradient-to-r from-primary/20 via-primary to-primary/20 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
             </div>
         </div>
     );
