@@ -1,5 +1,4 @@
 import React, { Dispatch, SetStateAction } from 'react';
-import { FaClock } from 'react-icons/fa';
 
 interface IScoreBoardProps {
     homeScore: number;
@@ -24,29 +23,41 @@ export default function ScoreBoard({
     };
 
     return (
-        <div className="flex items-center justify-center gap-4 md:gap-12 w-full px-2">
-            <div className="flex flex-col items-center">
-                <span className="text-secondary text-xs md:text-sm uppercase tracking-wider mb-2">Time A</span>
-                <div className="text-4xl md:text-6xl font-bold text-foreground bg-surface/50 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center decoration-0">
-                    {homeScore}
-                </div>
-            </div>
+        <div className="flex flex-col items-center w-full max-w-2xl mx-auto py-4">
+            <div className="relative group">
+                {/* Scoreboard Main Container */}
+                <div className="glass-panel rounded-2xl overflow-hidden flex items-stretch shadow-2xl border-white/10">
+                    
+                    {/* Home Team */}
+                    <div className="flex items-center px-6 py-4 bg-primary/20 min-w-[120px] justify-end gap-4">
+                        <span className="text-foreground font-black text-lg uppercase tracking-tighter hidden sm:block">Time A</span>
+                        <div className="text-4xl md:text-5xl font-black text-foreground tabular-nums drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+                            {homeScore}
+                        </div>
+                    </div>
 
-            <div className="flex flex-col items-center gap-2">
-                <div className="text-3xl md:text-4xl font-mono text-primary font-bold tracking-widest flex items-center gap-2">
-                    <FaClock className="w-5 h-5 md:w-6 md:h-6" />
-                    {formatTime(time)}
-                </div>
-                <span className="text-[10px] md:text-xs text-green-500 uppercase tracking-widest font-bold whitespace-nowrap">
-                    {isRunning ? 'Em Andamento' : 'Pausado'}
-                </span>
-            </div>
+                    {/* Timer & Divider */}
+                    <div className="flex flex-col items-center justify-center px-4 md:px-8 border-x border-white/10 bg-surface/40 min-w-[100px] md:min-w-[140px]">
+                        <div className={`flex items-center gap-2 font-mono text-xl md:text-2xl font-bold tracking-widest ${isRunning ? 'text-accent' : 'text-secondary'}`}>
+                            {isRunning && <div className="w-2 h-2 rounded-full bg-accent animate-pulse-live" />}
+                            {formatTime(time)}
+                        </div>
+                        <div className="text-[10px] uppercase font-black tracking-[0.2em] text-secondary mt-1">
+                            {isRunning ? 'Live' : 'Pausado'}
+                        </div>
+                    </div>
 
-            <div className="flex flex-col items-center">
-                <span className="text-secondary text-xs md:text-sm uppercase tracking-wider mb-2">Time B</span>
-                <div className="text-4xl md:text-6xl font-bold text-foreground bg-surface/50 rounded-2xl p-3 md:p-4 min-w-[70px] md:min-w-[100px] text-center">
-                    {awayScore}
+                    {/* Away Team */}
+                    <div className="flex items-center px-6 py-4 bg-secondary/10 min-w-[120px] justify-start gap-4">
+                        <div className="text-4xl md:text-5xl font-black text-foreground tabular-nums drop-shadow-[0_2px_10px_rgba(0,0,0,0.5)]">
+                            {awayScore}
+                        </div>
+                        <span className="text-foreground font-black text-lg uppercase tracking-tighter hidden sm:block">Time B</span>
+                    </div>
                 </div>
+
+                {/* Ambient Glow */}
+                <div className={`absolute -inset-1 rounded-2xl blur-xl opacity-20 transition-all duration-1000 -z-10 ${isRunning ? 'bg-primary' : 'bg-transparent'}`} />
             </div>
         </div>
     );

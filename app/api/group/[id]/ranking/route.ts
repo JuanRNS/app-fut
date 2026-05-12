@@ -1,15 +1,18 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/prisma";
 import { IResponseRanking } from "@/interface/player.interface";
-
+import { requireOwnedGroup } from "@/lib/api-auth";
+import { parsePagination } from "@/lib/api-validation";
 
 export async function GET(request: Request, { params }: { params: Promise<{ id: string }> }) {
+    const { id } = await params;
+    const access = await requireOwnedGroup(id);
+    if (access.response) return access.response;
+
     try {
         const { searchParams } = new URL(request.url);
-        const page = Number(searchParams.get('page')) || 1;
-        const limit = Number(searchParams.get('limit')) || 10;
+        const { page, limit } = parsePagination(request.url, 10);
         const filter = searchParams.get('filter') || 'all';
-        const { id } = await params;
 
         let dateFilter = undefined;
         if (filter === 'daily') {
@@ -25,7 +28,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
 
         const players = await prisma.player.findMany({
             where: {
-                groupId: id,
+                groupId: access.groupId,
             },
             select: {
                 id: true,
@@ -44,7 +47,6 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         });
 
         const sortedPlayers = players.sort((a, b) => b._count.statistics - a._count.statistics);
-
         const totalItems = sortedPlayers.length;
         const totalPages = Math.ceil(totalItems / limit);
         const startIndex = (page - 1) * limit;
@@ -66,7 +68,7 @@ export async function GET(request: Request, { params }: { params: Promise<{ id: 
         };
 
         return NextResponse.json(ranking);
-    } catch (error) {
+    } catch {
         return NextResponse.json({ error: "Falha ao buscar ranking" }, { status: 500 });
     }
 }

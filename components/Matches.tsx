@@ -1,24 +1,32 @@
 import MatchDetails from "./MatchDetails";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
 import { IMatchResponse } from "@/interface/match.interface";
 import { IPagination } from "@/interface/pagination.interface";
 import Pagination from "./Pagination";
+import { toast } from "sonner";
 
 export default function Matches({ groupId }: { groupId: string }) {
     const [matches, setMatches] = useState<IMatchResponse | null>(null);
     const [pagination, setPagination] = useState<IPagination | null>(null);
     const [currentPage, setCurrentPage] = useState(1);
+
+    const fetchGroup = useCallback(async () => {
+        try {
+            const response = await fetch(`/api/group/${groupId}/match?page=${currentPage}&limit=5`);
+            if (!response.ok) throw new Error();
+            const data = await response.json();
+            setMatches(data);
+            setPagination(data.pagination);
+        } catch {
+            toast.error("Erro ao sincronizar histórico de partidas");
+            setMatches({ matches: [], pagination: { page: 1, limit: 5, total: 0, totalPages: 0 } });
+        }
+    }, [groupId, currentPage]);
+
     useEffect(() => {
         fetchGroup();
-    }, [groupId, currentPage])
-
-    async function fetchGroup() {
-        const response = await fetch(`/api/group/${groupId}/match?page=${currentPage}&limit=5`);
-        const data = await response.json();
-        setMatches(data);
-        setPagination(data.pagination);
-    }
+    }, [fetchGroup]);
 
     const handlePageChange = (page: number) => {
         setCurrentPage(page);

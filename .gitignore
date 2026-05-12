@@ -45,3 +45,8 @@ next-env.d.ts
 /generated/prisma
 .worktrees/
 
+.agents/
+
+docs/
+
+skills-lock.json

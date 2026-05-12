@@ -1,16 +1,25 @@
 import { IRequestGroup } from "@/interface/group.interface";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
-import { getSession } from "@/lib/jwt";
+import { requireUser } from "@/lib/api-auth";
+import { parseGroupInput, readJsonObject } from "@/lib/api-validation";
 
 export async function POST(request: Request) {
-    const group: IRequestGroup = await request.json();
-    const userId = await getSession();
+    const auth = await requireUser();
+    if (auth.response) return auth.response;
+
+    const group = parseGroupInput(await readJsonObject(request)) satisfies IRequestGroup | null;
+    if (!group) {
+        return NextResponse.json({ message: "Dados do grupo invalidos" }, { status: 400 });
+    }
+
+    const normalizedName = group.name.toLowerCase();
 
     try {
         const groupOn = await prisma.group.findFirst({
             where: {
-                name: group.name
+                name: normalizedName,
+                ownerId: auth.userId
             }
         })
 
@@ -20,30 +29,34 @@ export async function POST(request: Request) {
 
         await prisma.group.create({
             data: {
-                name: group.name.trim().toLowerCase(),
+                name: normalizedName,
                 description: group.description,
-                ownerId: userId
+                ownerId: auth.userId
             }
         })
 
         return NextResponse.json({ message: "Grupo criado com sucesso" }, { status: 201 })
-    } catch (error) {
-        return NextResponse.json({ message: "Erro ao criar grupo" + error }, { status: 500 })
+    } catch {
+        return NextResponse.json({ message: "Erro ao criar grupo" }, { status: 500 })
     }
 }
 
 
-export async function GET(request: Request) {
+export async function GET() {
+    const auth = await requireUser();
+    if (auth.response) return auth.response;
+
     try {
-        const groups = await prisma.group.findMany(
-            {
-                where: {
-                    ownerId: await getSession()
-                }
+        const groups = await prisma.group.findMany({
+            where: {
+                ownerId: auth.userId
+            },
+            orderBy: {
+                createdAt: "desc"
             }
-        )
+        })
         return NextResponse.json(groups, { status: 200 })
-    } catch (error) {
+    } catch {
         return NextResponse.json({ message: "Erro ao buscar grupos" }, { status: 500 })
     }
 }

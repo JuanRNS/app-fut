@@ -19,7 +19,7 @@ export interface IMatchInterfaceProps {
 }
 
 export interface IMatchResponseDetails {
-    match: IMatch[];
+    match: IMatch;
     goalsHome: number;
     goalsAway: number;
     players: IResponsePlayerMatch[];

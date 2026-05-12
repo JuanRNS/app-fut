@@ -59,7 +59,7 @@ export default function DropdownStatistics({ onClose, playerId, matchId, groupId
     return (
         <div
             ref={dropdownRef}
-            className="absolute -top-6 -right-2 z-[50] bg-[#1a1b26] border border-white/10 rounded-xl shadow-xl overflow-hidden min-w-[160px] animate-in slide-in-from-top-2 fade-in duration-200"
+            className="absolute -top-6 -right-2 z-[9999] bg-[#1a1b26] border border-white/10 rounded-xl shadow-2xl overflow-hidden min-w-[170px] animate-in slide-in-from-top-2 fade-in duration-200"
         >
             <div className="flex flex-col p-1">
                 <button
