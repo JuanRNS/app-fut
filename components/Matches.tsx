@@ -50,8 +50,8 @@ export default function Matches({ groupId }: { groupId: string }) {
             ) : (
                 <p className="text-gray-500 text-center py-8">Nenhuma partida realizada.</p>
             )}
-            {pagination && (
-                <div className="flex justify-center mt-4 text-black">
+            {pagination && pagination.totalPages > 1 && (
+                <div className="flex justify-center mt-8">
                     <Pagination
                         currentPage={pagination.page}
                         totalPages={pagination.totalPages}

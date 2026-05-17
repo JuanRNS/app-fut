@@ -1,43 +1,63 @@
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState, useCallback, useRef } from "react";
 import { createPortal } from "react-dom";
 import Button from "./ui/Button";
 import { FaPlus, FaTimes, FaSpinner, FaSearch, FaUser, FaPen, FaTrash } from "react-icons/fa";
 import CreatePlayer from "./CreatePlayer";
 import { IPlayer } from "@/interface/player.interface";
+import { IPagination } from "@/interface/pagination.interface";
+import Pagination from "./Pagination";
 import { toast } from "sonner";
 
 export default function Players(props: { groupId: string }) {
     const { groupId } = props;
     const [players, setPlayers] = useState<IPlayer[]>([]);
-    const [searchTerm, setSearchText] = useState("");
+    const [pagination, setPagination] = useState<IPagination | null>(null);
+    const [currentPage, setCurrentPage] = useState(1);
+    const [searchTerm, setSearchTerm] = useState("");
+    const [debouncedSearch, setDebouncedSearch] = useState("");
     const [loading, setLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [playerToEdit, setPlayerToEdit] = useState<IPlayer | undefined>(undefined);
+    const debounceTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
 
     const fetchPlayers = useCallback(async () => {
+        setLoading(true);
         try {
-            const response = await fetch(`/api/group/${groupId}/player`);
+            const params = new URLSearchParams({
+                page: String(currentPage),
+                limit: "10",
+                ...(debouncedSearch ? { search: debouncedSearch } : {}),
+            });
+            const response = await fetch(`/api/group/${groupId}/player?${params}`);
             if (!response.ok) throw new Error("Falha ao buscar jogadores");
             const data = await response.json();
-            setPlayers(data || []);
+            setPlayers(data.players || []);
+            setPagination(data.pagination);
         } catch {
             toast.error("Erro ao buscar jogadores");
         } finally {
             setLoading(false);
         }
-    }, [groupId]);
+    }, [groupId, currentPage, debouncedSearch]);
 
     useEffect(() => {
         fetchPlayers();
     }, [fetchPlayers]);
 
+    const handleSearchChange = (value: string) => {
+        setSearchTerm(value);
+        if (debounceTimer.current) clearTimeout(debounceTimer.current);
+        debounceTimer.current = setTimeout(() => {
+            setDebouncedSearch(value);
+            setCurrentPage(1);
+        }, 400);
+    };
+
     const handleDeletePlayer = async (id: string) => {
         try {
             const response = await fetch(`/api/group/${groupId}/player/${id}`, {
                 method: "DELETE",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id }),
             });
 
@@ -47,11 +67,7 @@ export default function Players(props: { groupId: string }) {
         } catch {
             toast.error("Falha ao remover jogador");
         }
-    }
-
-    const filteredPlayers = players.filter(player => 
-        player.name.toLowerCase().includes(searchTerm.toLowerCase())
-    );
+    };
 
     const playerModal = isModalOpen ? (
         <div
@@ -98,15 +114,6 @@ export default function Players(props: { groupId: string }) {
         </div>
     ) : null;
 
-    if (loading) {
-        return (
-            <div className="flex flex-col items-center justify-center min-h-[400px] gap-4">
-                <FaSpinner className="w-12 h-12 animate-spin text-primary" />
-                <p className="text-secondary font-black uppercase tracking-widest text-[10px]">Sincronizando Elenco...</p>
-            </div>
-        );
-    }
-
     return (
         <div className="space-y-8 bg-noise p-1 animate-in fade-in duration-700">
             {/* Toolbar Area */}
@@ -115,21 +122,21 @@ export default function Players(props: { groupId: string }) {
                     <div className="absolute inset-y-0 left-4 flex items-center pointer-events-none text-secondary group-focus-within:text-primary transition-colors">
                         <FaSearch size={14} />
                     </div>
-                    <input 
+                    <input
                         type="text"
                         placeholder="BUSCAR ATLETA NO ELENCO..."
                         value={searchTerm}
-                        onChange={(e) => setSearchText(e.target.value)}
+                        onChange={(e) => handleSearchChange(e.target.value)}
                         className="w-full pl-12 pr-6 py-4 glass-panel border border-white/5 rounded-2xl text-xs font-black uppercase tracking-widest outline-none focus:border-primary/50 transition-all placeholder:text-secondary/30"
                     />
                 </div>
 
-                <Button 
+                <Button
                     onClick={() => {
                         setPlayerToEdit(undefined);
                         setIsModalOpen(true);
-                    }} 
-                    variant="primary" 
+                    }}
+                    variant="primary"
                     className="w-full md:w-auto px-8 py-4 rounded-2xl uppercase font-black tracking-widest text-xs flex items-center justify-center gap-3 shadow-[0_10px_30px_rgba(37,99,235,0.3)] hover:shadow-[0_15px_40px_rgba(37,99,235,0.5)] animate-shimmer"
                 >
                     <FaPlus /> Novo Atleta
@@ -139,7 +146,7 @@ export default function Players(props: { groupId: string }) {
             {/* Tactical Table Area */}
             <div className="glass-panel rounded-[2.5rem] border border-white/5 overflow-hidden shadow-2xl relative">
                 <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-primary to-transparent opacity-30" />
-                
+
                 <table className="w-full text-left border-collapse">
                     <thead className="bg-surface/40 text-secondary/50 text-[10px] font-black uppercase tracking-[0.2em] border-b border-white/5">
                         <tr>
@@ -149,8 +156,14 @@ export default function Players(props: { groupId: string }) {
                         </tr>
                     </thead>
                     <tbody className="divide-y divide-white/5">
-                        {filteredPlayers.length > 0 ? (
-                            filteredPlayers.map((player) => (
+                        {loading ? (
+                            <tr>
+                                <td colSpan={3} className="py-20 text-center">
+                                    <FaSpinner className="mx-auto h-8 w-8 animate-spin text-primary" />
+                                </td>
+                            </tr>
+                        ) : players.length > 0 ? (
+                            players.map((player) => (
                                 <tr key={player.id} className="group hover:bg-white/5 transition-all duration-300">
                                     <td className="px-8 py-6">
                                         <div className="flex items-center gap-4">
@@ -176,7 +189,7 @@ export default function Players(props: { groupId: string }) {
                                     </td>
                                     <td className="px-8 py-6 text-right">
                                         <div className="flex justify-end gap-2">
-                                            <button 
+                                            <button
                                                 onClick={() => {
                                                     setPlayerToEdit(player);
                                                     setIsModalOpen(true);
@@ -186,7 +199,7 @@ export default function Players(props: { groupId: string }) {
                                             >
                                                 <FaPen size={14} />
                                             </button>
-                                            <button 
+                                            <button
                                                 onClick={() => handleDeletePlayer(player.id)}
                                                 className="p-3 text-secondary hover:text-red-400 hover:bg-white/5 rounded-xl transition-all"
                                                 title="Excluir"
@@ -209,7 +222,17 @@ export default function Players(props: { groupId: string }) {
                 </table>
             </div>
 
+            {pagination && pagination.totalPages > 1 && (
+                <div className="flex justify-center mt-8">
+                    <Pagination
+                        currentPage={pagination.page}
+                        totalPages={pagination.totalPages}
+                        onPageChange={setCurrentPage}
+                    />
+                </div>
+            )}
+
             {playerModal && typeof document !== "undefined" ? createPortal(playerModal, document.body) : null}
         </div>
-    )
+    );
 }

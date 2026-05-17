@@ -131,7 +131,7 @@ export default function Sidebar({ isOpen, onClose }: SidebarProps) {
                         className="flex min-h-11 items-center gap-4 w-full px-4 py-4 rounded-2xl font-black uppercase tracking-widest text-xs text-red-400 hover:bg-red-500/10 transition-all group"
                     >
                         <FaOutdent className="text-lg group-hover:-translate-x-1 transition-transform" />
-                        Sair do Sistema
+                        Sair
                     </button>
                 </div>
 

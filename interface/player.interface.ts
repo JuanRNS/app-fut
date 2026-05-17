@@ -41,3 +41,8 @@ export interface IResponsePlayerMatch extends IPlayer {
     team: string;
     ownGoals?: number;
 }
+
+export interface IResponsePlayers {
+    players: IPlayer[];
+    pagination: IPagination;
+}

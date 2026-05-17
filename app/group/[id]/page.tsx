@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams } from "next/navigation";
-import { FaSpinner } from "react-icons/fa";
+import { FaSpinner, FaChevronDown } from "react-icons/fa";
 import { FaArrowLeft, FaBan, FaChartLine, FaFutbol } from "react-icons/fa6";
 import Link from "next/link";
 import Button from "@/components/ui/Button";
@@ -165,26 +165,32 @@ export default function GroupPage() {
                 </div>
             </motion.section>
 
-            <motion.nav variants={blockMotion} className="flex lg:hidden justify-start sm:justify-center items-center gap-2 overflow-x-auto pb-4 scrollbar-hide">
-                {TABS.map((tab) => {
-                    const isActive = activeTab === tab.id;
-                    const Icon = tab.icon;
+            <motion.nav variants={blockMotion} className="lg:hidden relative">
+                {(() => {
+                    const activeTabData = TABS.find((t) => t.id === activeTab);
+                    const ActiveIcon = activeTabData?.icon;
                     return (
-                        <motion.button
-                            key={tab.id}
-                            onClick={() => handleTabChange(tab.id)}
-                            className={`relative flex min-h-11 items-center gap-2 px-5 py-3 rounded-2xl font-black uppercase tracking-widest text-[10px] transition-colors whitespace-nowrap ${
-                                isActive
-                                    ? "bg-primary text-white shadow-lg shadow-primary/20"
-                                    : "glass-panel text-secondary border-white/5 hover:bg-white/5"
-                            }`}
-                            whileTap={{ scale: 0.96 }}
-                        >
-                            <Icon size={14} />
-                            {tab.label}
-                        </motion.button>
+                        <>
+                            {ActiveIcon && (
+                                <div className="absolute left-5 top-1/2 -translate-y-1/2 text-primary pointer-events-none z-10">
+                                    <ActiveIcon size={14} />
+                                </div>
+                            )}
+                            <select
+                                value={activeTab}
+                                onChange={(e) => handleTabChange(e.target.value)}
+                                className="w-full glass-panel text-foreground border border-white/5 rounded-2xl pl-12 pr-12 py-4 text-xs font-black uppercase tracking-widest outline-none cursor-pointer focus:border-primary/50 transition-all shadow-lg appearance-none"
+                            >
+                                {TABS.map((tab) => (
+                                    <option key={tab.id} value={tab.id} className="bg-surface text-foreground">
+                                        {tab.label}
+                                    </option>
+                                ))}
+                            </select>
+                            <FaChevronDown className="absolute right-5 top-1/2 -translate-y-1/2 text-secondary pointer-events-none" size={12} />
+                        </>
                     );
-                })}
+                })()}
             </motion.nav>
 
             <motion.section variants={blockMotion} className="min-h-[400px]">
