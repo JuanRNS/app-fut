@@ -17,6 +17,8 @@ export interface IResponseGroup {
 
 export interface IGroupCardProps {
     group: IResponseGroup;
+    index?: number;
+    fetchGroups: () => void;
 }
 
 export interface IGroupDetails {

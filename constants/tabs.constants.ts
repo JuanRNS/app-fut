@@ -5,5 +5,5 @@ export const TABS = [
     { id: "players", label: "Jogadores", icon: FaUsers },
     { id: "matches", label: "Partidas", icon: FaFutbol },
     { id: "ranking", label: "Ranking", icon: FaTrophy },
-    { id: "createMatch", label: "Cria Partida", icon: FaPlus },
+    { id: "createMatch", label: "Criar Partida", icon: FaPlus },
 ];

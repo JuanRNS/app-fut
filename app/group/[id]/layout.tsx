@@ -4,20 +4,22 @@ import { useState } from "react";
 import Sidebar from "@/components/Sidebar";
 import Header from "@/components/Header";
 
-export default function HomeLayout({
+export default function GroupLayout({
     children,
 }: Readonly<{
     children: React.ReactNode;
 }>) {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     return (
-        <div className="min-h-screen bg-background text-foreground flex">
+        <div className="min-h-screen bg-background text-foreground overflow-x-hidden">
+            {/* Sidebar with Desktop support built-in */}
             <Sidebar isOpen={isSidebarOpen} onClose={() => setIsSidebarOpen(false)} />
 
-            <div className="flex-1 flex flex-col min-h-screen">
+            {/* Main Content Area */}
+            <div className="flex min-h-screen w-full min-w-0 flex-col transition-all duration-500 lg:pl-72">
                 <Header isOpen={isSidebarOpen} onOpen={() => setIsSidebarOpen(true)} />
 
-                <main className="flex-1 p-4 md:p-8">
+                <main className="relative flex-1 overflow-x-hidden overflow-y-auto bg-noise p-4 md:p-8 xl:p-10">
                     {children}
                 </main>
             </div>

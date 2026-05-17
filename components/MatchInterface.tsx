@@ -1,13 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { FaPlay, FaPause, FaStop, FaClock, FaPlus, FaTimes, FaUserShield, FaSpinner } from 'react-icons/fa';
+import { FaPlay, FaPlus, FaTimes, FaUserShield, FaSpinner } from 'react-icons/fa';
 import Button from './ui/Button';
-import Card from './ui/Card';
 import PlayerCard from './PlayerCard';
 import DropdownStatistics from './DropdownStatistics';
 import ScoreBoard from './Scoreboard';
 import MatchControls from './MatchControls';
-import { IMatch, IMatchInterfaceProps, IMatchPlayer, IMatchResponse, IMatchResponseInterface } from '@/interface/match.interface';
-import { IPlayer, IPlayerMatch } from '@/interface/player.interface';
+import { IMatch, IMatchInterfaceProps, IMatchPlayer, IMatchResponseInterface } from '@/interface/match.interface';
+import { IPlayer } from '@/interface/player.interface';
 import { toast } from 'sonner';
 import { MatchStatisticsType, Team } from '@/generated/prisma/enums';
 import PlayerSelectionModal from './modais/PlayerSelectionModal';
@@ -174,21 +173,25 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
 
         if (player) {
             return (
-                <div key={index} className="relative group">
+                <div
+                    key={index}
+                    className={`relative group animate-slide-up-fade ${openDropdownPlayerId === player.id ? 'z-[5000]' : 'z-0'}`}
+                    style={{ animationDelay: `${index * 100}ms` }}
+                >
                     <PlayerCard
                         name={player.name}
                         id={player.id}
                         isMatch={true}
                     />
                     {isGK && (
-                        <div className="absolute -top-2 -left-2 bg-yellow-500 text-black p-1.5 rounded-full shadow-lg" title="Goleiro">
+                        <div className="absolute -top-2 -left-2 bg-yellow-500 text-black p-1.5 rounded-full shadow-lg z-10" title="Goleiro">
                             <FaUserShield size={14} />
                         </div>
                     )}
                     {!hasStarted && (
                         <button
                             onClick={() => handleRemovePlayer(team, player.id)}
-                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600"
+                            className="absolute -top-2 -right-2 bg-red-500 text-white p-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity shadow-lg hover:bg-red-600 z-10"
                         >
                             <FaTimes size={12} />
                         </button>
@@ -200,7 +203,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                                     e.stopPropagation();
                                     toggleDropdown(player.id);
                                 }}
-                                className={`absolute bottom-6 -right-2 p-1.5 rounded-full shadow-lg cursor-pointer transition-colors ${openDropdownPlayerId === player.id
+                            className={`absolute bottom-6 -right-2 p-1.5 rounded-full shadow-lg cursor-pointer transition-all hover:scale-110 z-[10000] ${openDropdownPlayerId === player.id
                                     ? 'bg-white text-black hover:bg-gray-200'
                                     : 'bg-green-500 text-black hover:bg-green-600'
                                     }`}
@@ -225,7 +228,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
 
         if (hasStarted) {
             return (
-                <div key={index} className="w-full h-[72px] rounded-xl border-2 border-dashed border-border bg-surface/50 flex items-center justify-center text-secondary/30">
+                <div key={index} className="w-full h-[72px] rounded-xl border-2 border-dashed border-border bg-surface/20 flex items-center justify-center text-secondary/30">
                     <span className="text-sm">Vazio</span>
                 </div>
             );
@@ -235,58 +238,66 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
             <button
                 key={index}
                 onClick={() => setSelectingFor(team)}
-                className={`w-full h-[72px] rounded-xl border-2 border-dashed flex items-center justify-center gap-2 transition-all group
+                className={`w-full h-[72px] rounded-xl border-2 border-dashed flex items-center justify-center gap-2 transition-all group overflow-hidden relative
                     ${isGK
                         ? 'border-yellow-500/30 bg-yellow-500/5 text-yellow-500/50 hover:bg-yellow-500/10 hover:border-yellow-500/50 hover:text-yellow-500'
                         : 'border-border text-secondary/40 hover:text-primary hover:border-primary/50 hover:bg-primary/5 hover:text-primary'
                     }`}
             >
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/5 to-transparent -translate-x-full group-hover:translate-x-full transition-transform duration-1000" />
                 {isGK ? <FaUserShield /> : <FaPlus />}
-                <span className="text-sm font-medium">{isGK ? "Goleiro" : "Adicionar"}</span>
+                <span className="text-sm font-black uppercase tracking-widest">{isGK ? "Goleiro" : "Adicionar"}</span>
             </button>
         );
     };
 
     return (
-        <div className="flex flex-col gap-6 relative">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="bg-surface rounded-xl p-6 border border-border flex flex-col gap-4">
+        <div className="flex flex-col gap-8 relative bg-noise py-4">
+            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative">
+                {/* VS Badge Overlay for Desktop */}
+                <div className="hidden lg:flex absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 z-20 w-16 h-16 glass-panel rounded-full items-center justify-center border-primary/30 shadow-[0_0_30px_rgba(37,99,235,0.2)]">
+                    <span className="text-2xl font-black italic text-primary tracking-tighter">VS</span>
+                </div>
+
+                {/* Team A Panel */}
+                <div className="glass-panel rounded-2xl p-6 flex flex-col gap-4 border-white/5 shadow-xl relative overflow-visible">
+                    <div className="absolute top-0 left-0 w-1 h-full bg-primary" />
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
-                            <div className="w-3 h-8 bg-primary rounded-full"></div>
-                            <h3 className="text-foreground font-bold text-xl">Time A</h3>
+                            <h3 className="text-foreground font-black text-2xl uppercase tracking-tighter">Time A</h3>
                         </div>
-                        <span className="text-xs font-mono bg-surface/50 px-3 py-1 rounded-full text-secondary border border-border">
-                            {teamA.length}/5
+                        <span className="text-xs font-black bg-primary/10 px-3 py-1 rounded-full text-primary border border-primary/20">
+                            {teamA.length} / 5
                         </span>
                     </div>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 relative z-10">
                         {Array.from({ length: 5 }).map((_, i) => renderTeamSlot('HOME', i))}
                     </div>
                 </div>
 
-                <div className="bg-surface rounded-xl p-6 border border-border flex flex-col gap-4">
+                {/* Team B Panel */}
+                <div className="glass-panel rounded-2xl p-6 flex flex-col gap-4 border-white/5 shadow-xl relative overflow-visible">
+                    <div className="absolute top-0 right-0 w-1 h-full bg-blue-400" />
                     <div className="flex items-center justify-between mb-2">
                         <div className="flex items-center gap-3">
-                            <div className="w-3 h-8 bg-blue-500 rounded-full"></div>
-                            <h3 className="text-foreground font-bold text-xl">Time B</h3>
+                            <h3 className="text-foreground font-black text-2xl uppercase tracking-tighter">Time B</h3>
                         </div>
-                        <span className="text-xs font-mono bg-surface/50 px-3 py-1 rounded-full text-secondary border border-border">
-                            {teamB.length}/5
+                        <span className="text-xs font-black bg-blue-400/10 px-3 py-1 rounded-full text-blue-400 border border-blue-400/20">
+                            {teamB.length} / 5
                         </span>
                     </div>
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-col gap-3 relative z-10">
                         {Array.from({ length: 5 }).map((_, i) => renderTeamSlot('AWAY', i))}
                     </div>
                 </div>
             </div>
 
             {!hasStarted ? (
-                <div className="flex justify-center mt-4">
+                <div className="flex justify-center mt-6 animate-slide-up-fade">
                     <Button
                         variant="primary"
                         onClick={handleStartMatch}
-                        className="px-12 py-4 text-xl font-bold rounded-xl shadow-xl shadow-primary/20 hover:shadow-primary/40 transition-all flex items-center gap-3"
+                        className="px-16 py-5 text-2xl font-black uppercase tracking-widest rounded-2xl shadow-[0_10px_40px_rgba(37,99,235,0.4)] hover:shadow-[0_15px_50px_rgba(37,99,235,0.6)] transition-all hover:-translate-y-1 flex items-center gap-4 bg-gradient-to-br from-primary to-blue-600 animate-shimmer"
                         disabled={isSubmitting}
                     >
                         {isSubmitting ? <FaSpinner className="animate-spin" /> : <FaPlay />}
@@ -294,7 +305,8 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                     </Button>
                 </div>
             ) : (
-                <Card className="flex flex-col items-center gap-6 py-8 animate-in fade-in slide-in-from-bottom-4 duration-500">
+                <div className="glass-panel rounded-3xl flex flex-col items-center gap-8 py-10 animate-slide-up-fade shadow-2xl border-white/10 relative overflow-hidden">
+                    <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-accent to-transparent animate-pulse-live" />
                     <ScoreBoard
                         homeScore={homeScore}
                         awayScore={awayScore}
@@ -310,7 +322,7 @@ export default function MatchInterface({ players, onFinish, groupId }: IMatchInt
                         onFinish={onFinish}
                         onReset={resetTimer}
                     />
-                </Card>
+                </div>
             )}
 
             {selectingFor && (

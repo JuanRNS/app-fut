@@ -76,7 +76,7 @@ export default function LoginForm() {
             </button>
 
             <div className="flex flex-col items-center mb-8">
-                <div className="w-20 h-20 bg-gradient-to-tr from-primary to-secondary rounded-full flex items-center justify-center mb-4 shadow-[0_0_20px_rgba(0,240,255,0.4)]">
+                <div className="w-20 h-20 bg-gradient-to-tr from-primary to-secondary rounded-full flex items-center justify-center mb-4 shadow-lg shadow-primary/20">
                     <span className="text-3xl">⚽</span>
                 </div>
                 <h1 className="text-3xl font-bold bg-clip-text bg-gradient-to-r text-foreground">

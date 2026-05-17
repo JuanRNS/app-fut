@@ -1,14 +1,18 @@
 import { Team } from "@/generated/prisma/enums";
+import { requireOwnedGroup } from "@/lib/api-auth";
 import { prisma } from "@/lib/prisma";
 import { NextResponse } from "next/server";
 
+export async function GET(_request: Request, { params }: { params: Promise<{ id: string, matchId: string }> }) {
+    const { id, matchId } = await params;
+    const access = await requireOwnedGroup(id);
+    if (access.response) return access.response;
 
-export async function GET(request: Request, { params }: { params: Promise<{ matchId: string }> }) {
-    const { matchId } = await params;
     try {
         const match = await prisma.match.findUnique({
             where: {
-                id: matchId
+                id: matchId,
+                groupId: access.groupId
             },
             include: {
                 statistics: true,
@@ -20,29 +24,30 @@ export async function GET(request: Request, { params }: { params: Promise<{ matc
             }
         })
         if (!match) {
-            return NextResponse.json({ message: "Partida não encontrada" }, { status: 404 })
+            return NextResponse.json({ message: "Partida nao encontrada" }, { status: 404 })
         }
 
-        const playersIds: {
+        const playersStats: {
             playerId: string,
             goals: number,
             ownGoals: number,
             team: Team
         }[] = [];
-        (await match).statistics.forEach(statistic => {
+
+        match.statistics.forEach(statistic => {
             if (statistic.type === 'GOAL') {
-                const player = playersIds.find(player => player.playerId === statistic.playerId)
+                const player = playersStats.find(player => player.playerId === statistic.playerId)
                 if (player) {
                     player.goals++
                 } else {
-                    playersIds.push({ playerId: statistic.playerId, goals: 1, ownGoals: 0, team: statistic.team })
+                    playersStats.push({ playerId: statistic.playerId, goals: 1, ownGoals: 0, team: statistic.team })
                 }
             } else if (statistic.type === 'OWN_GOAL') {
-                const player = playersIds.find(player => player.playerId === statistic.playerId)
+                const player = playersStats.find(player => player.playerId === statistic.playerId)
                 if (player) {
                     player.ownGoals++
                 } else {
-                    playersIds.push({ playerId: statistic.playerId, goals: 0, ownGoals: 1, team: statistic.team })
+                    playersStats.push({ playerId: statistic.playerId, goals: 0, ownGoals: 1, team: statistic.team })
                 }
             }
         })
@@ -50,13 +55,13 @@ export async function GET(request: Request, { params }: { params: Promise<{ matc
         const players = await prisma.player.findMany({
             where: {
                 id: {
-                    in: playersIds.map(player => player.playerId)
+                    in: playersStats.map(player => player.playerId)
                 }
             }
         })
 
         const playerResponse = players.map(player => {
-            const playerStats = playersIds.find(playerIds => playerIds.playerId === player.id)
+            const playerStats = playersStats.find(playerIds => playerIds.playerId === player.id)
             return {
                 ...player,
                 goals: playerStats?.goals || 0,
@@ -65,12 +70,12 @@ export async function GET(request: Request, { params }: { params: Promise<{ matc
             }
         }).filter(p => p.goals > 0 || p.ownGoals > 0);
 
-        const teamHomeGoals = (await match).statistics.filter(statistic =>
+        const teamHomeGoals = match.statistics.filter(statistic =>
             (statistic.team === 'HOME' && statistic.type === 'GOAL') ||
             (statistic.team === 'AWAY' && statistic.type === 'OWN_GOAL')
         ).length;
 
-        const teamAwayGoals = (await match).statistics.filter(statistic =>
+        const teamAwayGoals = match.statistics.filter(statistic =>
             (statistic.team === 'AWAY' && statistic.type === 'GOAL') ||
             (statistic.team === 'HOME' && statistic.type === 'OWN_GOAL')
         ).length;
@@ -83,23 +88,25 @@ export async function GET(request: Request, { params }: { params: Promise<{ matc
         }
 
         return NextResponse.json(response, { status: 200 })
-    } catch (error) {
+    } catch {
         return NextResponse.json({ message: "Erro ao buscar partida" }, { status: 500 })
     }
 }
 
-export async function DELETE(request: Request, { params }: { params: Promise<{ id: string, matchId: string }> }) {
+export async function DELETE(_request: Request, { params }: { params: Promise<{ id: string, matchId: string }> }) {
     const { id, matchId } = await params;
+    const access = await requireOwnedGroup(id);
+    if (access.response) return access.response;
+
     try {
         const match = await prisma.match.delete({
             where: {
                 id: matchId,
-                groupId: id
+                groupId: access.groupId
             }
         })
         return NextResponse.json(match, { status: 200 })
-    } catch (error) {
-        console.log(error)
+    } catch {
         return NextResponse.json({ message: "Erro ao deletar partida" }, { status: 500 })
     }
 }
